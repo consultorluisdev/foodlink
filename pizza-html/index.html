@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qsabore - A Melhor Pizza da Cidade</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Catálogo de pizzas Qsabore. Sabores irresistíveis por apenas R$ 10,00. Peça agora pelo WhatsApp!">
+    <meta name="keywords" content="pizza, delivery, pizzaria, Qsabore, catálogo">
+    <meta name="author" content="Qsabore">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Qsabore - A Melhor Pizza da Cidade">
+    <meta property="og:description" content="Catálogo de pizzas Qsabore. Sabores irresistíveis por apenas R$ 10,00.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://catalogo.qsabore.com.br">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;Qsabore&quot;,&quot;short_name&quot;:&quot;Qsabore&quot;,&quot;start_url&quot;:&quot;/&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#ffffff&quot;,&quot;theme_color&quot;:&quot;#F97316&quot;}">
+    <meta name="theme-color" content="#F97316">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍕</text></svg>">
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .hero-gradient { background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #2C2C2C 100%); }
+        .promo-badge { background: linear-gradient(135deg, #F97316, #DC2626); }
+        
+        .search-input:focus { box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.3); }
+        .whatsapp-float { position: fixed; bottom: 30px; right: 30px; z-index: 1000; }
+        .floating-whatsapp { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; padding: 1rem; }
+        .modal-overlay.open { display: flex; }
+        .modal-content { background: white; border-radius: 1rem; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-body { padding: 1.5rem; }
+        .modal-close { position: absolute; top: 1rem; right: 1rem; background: rgba(0,0,0,0.1); width: 2rem; height: 2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .modal-close:hover { background: rgba(0,0,0,0.2); }
+
+        /* Cart */
+        .cart-badge { position: absolute; top: -8px; right: -8px; background: #DC2626; color: white; font-size: 0.6rem; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .cart-qty-btn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid #d1d5db; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 700; transition: 0.2s; user-select: none; }
+        .cart-qty-btn:hover { background: #f3f4f6; }
+        .cart-qty-btn:active { background: #e5e7eb; }
+
+        @media (max-width: 640px) {
+            .whatsapp-float { bottom: 20px; right: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== NAVBAR ==================== -->
+    <nav class="bg-black text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="#home" class="flex items-center space-x-2">
+                    <span class="text-2xl font-bold text-orange-500">Q</span><span class="text-2xl font-bold">sabore</span>
+                </a>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="hover:text-orange-500 transition-colors">Home</a>
+                    <a href="#menu" class="hover:text-orange-500 transition-colors">Cardápio</a>
+                    <a href="#promotions" class="hover:text-orange-500 transition-colors">Promoções</a>
+                    <a href="#contact" class="hover:text-orange-500 transition-colors">Contato</a>
+                    <a href="#about" class="hover:text-orange-500 transition-colors">Sobre</a>
+                    
+                    <a href="https://instagram.com/qsabore" target="_blank" class="text-white hover:text-orange-500 transition-colors">
+                        <i class="fab fa-instagram text-xl"></i>
+                    </a>
+
+                    <button onclick="Cart.toggle()" class="relative text-white hover:text-orange-500 transition-colors">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cartBadgeDesktop" class="cart-badge hidden">0</span>
+                    </button>
+                    
+                    <a href="https://wa.me/5547992872163" target="_blank" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>WhatsApp</span>
+                    </a>
+                </div>
+                
+                <!-- Mobile -->
+                <div class="md:hidden flex items-center gap-4">
+                    <button onclick="Cart.toggle()" class="relative text-white">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cartBadgeMobile" class="cart-badge hidden">0</span>
+                    </button>
+                    <button id="mobileMenuBtn" class="text-white text-2xl" onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="mobileMenu" class="md:hidden hidden bg-gray-900 px-4 py-4 border-t border-gray-700">
+            <a href="#home" class="block py-2 hover:text-orange-500 transition-colors" onclick="closeMobileMenu()">Home</a>
+            <a href="#menu" class="block py-2 hover:text-orange-500 transition-colors" onclick="closeMobileMenu()">Cardápio</a>
+            <a href="#promotions" class="block py-2 hover:text-orange-500 transition-colors" onclick="closeMobileMenu()">Promoções</a>
+            <a href="#contact" class="block py-2 hover:text-orange-500 transition-colors" onclick="closeMobileMenu()">Contato</a>
+            <a href="#about" class="block py-2 hover:text-orange-500 transition-colors" onclick="closeMobileMenu()">Sobre</a>
+            
+            <div class="flex items-center gap-4 mt-4 pt-4 border-t border-gray-700">
+                <a href="https://instagram.com/qsabore" target="_blank" class="text-white hover:text-orange-500 transition-colors">
+                    <i class="fab fa-instagram text-xl"></i>
+                </a>
+                <a href="https://wa.me/5547992872163" target="_blank" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors flex-1 justify-center">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==================== HERO ==================== -->
+    <section id="home" class="hero-gradient text-white overflow-hidden relative">
+        <div class="absolute inset-0 opacity-10">
+            <div class="w-full h-full" style="background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200'); background-size: cover; background-position: center;"></div>
+        </div>
+        <div class="relative max-w-7xl mx-auto px-4 py-24 sm:py-32">
+            <div class="max-w-2xl" style="animation: fadeIn 0.8s ease-in;">
+                <h1 class="text-5xl sm:text-6xl font-bold mb-6 leading-tight">A Melhor Pizza da Cidade</h1>
+                <p class="text-xl sm:text-2xl mb-8 text-gray-300">
+                    Sabores irresistíveis por apenas <span class="text-orange-500 font-bold">R$ 10,00</span>
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="#menu" class="bg-orange-500 hover:bg-orange-600 px-8 py-4 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl">
+                        <i class="fas fa-utensils mr-2"></i> Ver Cardápio
+                    </a>
+                    <a href="https://wa.me/5547992872163" target="_blank" class="bg-green-500 hover:bg-green-600 px-8 py-4 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl flex items-center gap-2">
+                        <i class="fab fa-whatsapp"></i> Pedir no WhatsApp
+                    </a>
+                </div>
+                <div class="mt-8 flex items-center gap-4 text-sm text-gray-400">
+                    <span><i class="fas fa-check-circle text-green-500"></i> Entrega rápida</span>
+                    <span><i class="fas fa-check-circle text-green-500"></i> Pagamento na entrega</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CATEGORIAS ==================== -->
+    <section class="py-16 px-4 max-w-7xl mx-auto">
+        <h2 class="text-3xl font-bold text-center mb-4">Categorias</h2>
+        <p class="text-center text-gray-600 mb-12">Escolha sua pizza favorita</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="category-card" onclick="Catalog.filter('Tradicionais'); scrollToMenu()">
+                <i class="fas fa-pizza-slice text-4xl text-orange-500 mb-3"></i>
+                <h3 class="font-bold text-lg">Tradicionais</h3>
+                <p class="text-sm text-gray-600">As clássicas</p>
+            </div>
+            <div class="category-card" onclick="Catalog.filter('Especiais'); scrollToMenu()">
+                <i class="fas fa-star text-4xl text-orange-500 mb-3"></i>
+                <h3 class="font-bold text-lg">Especiais</h3>
+                <p class="text-sm text-gray-600">Sabores únicos</p>
+            </div>
+            <div class="category-card" onclick="Catalog.filter('Doces'); scrollToMenu()">
+                <i class="fas fa-candy-cane text-4xl text-orange-500 mb-3"></i>
+                <h3 class="font-bold text-lg">Doces</h3>
+                <p class="text-sm text-gray-600">Sobremesas</p>
+            </div>
+            <div class="category-card" onclick="Catalog.filter('Bebidas'); scrollToMenu()">
+                <i class="fas fa-wine-bottle text-4xl text-orange-500 mb-3"></i>
+                <h3 class="font-bold text-lg">Bebidas</h3>
+                <p class="text-sm text-gray-600">Refrescantes</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CARDÁPIO ==================== -->
+    <section id="menu" class="py-16 px-4 bg-gray-50">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-4">Cardápio</h2>
+            <p class="text-center text-gray-600 mb-8">Todas as pizzas por apenas R$ 10,00</p>
+            
+            <div class="max-w-md mx-auto mb-12">
+                <div class="relative">
+                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar pizza..." class="search-input w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition">
+                </div>
+                <div class="flex flex-wrap justify-center gap-2 mt-4">
+                    <button onclick="Catalog.filter('Todos')" class="filter-btn px-4 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition text-sm font-medium">Todos</button>
+                    <button onclick="Catalog.filter('Tradicionais')" class="filter-btn px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-sm font-medium">Tradicionais</button>
+                    <button onclick="Catalog.filter('Especiais')" class="filter-btn px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-sm font-medium">Especiais</button>
+                    <button onclick="Catalog.filter('Doces')" class="filter-btn px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-sm font-medium">Doces</button>
+                    <button onclick="Catalog.filter('Bebidas')" class="filter-btn px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-sm font-medium">Bebidas</button>
+                </div>
+            </div>
+            
+            <div id="pizzaGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+            
+            <div id="noResults" class="text-center py-12 hidden">
+                <i class="fas fa-pizza-slice text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-2xl font-bold text-gray-600">Nenhuma pizza encontrada</h3>
+                <p class="text-gray-500 mt-2">Tente buscar por outro nome</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== PROMOÇÕES ==================== -->
+    <section id="promotions" class="py-16 px-4 max-w-7xl mx-auto">
+        <h2 class="text-3xl font-bold text-center mb-4">Promoções Especiais</h2>
+        <p class="text-center text-gray-600 mb-12">Ofertas imperdíveis para você</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                <div class="promo-badge text-white p-2 text-center font-bold"><i class="fas fa-tag mr-2"></i> OFERTA ESPECIAL</div>
+                <div class="p-6 text-center">
+                    <i class="fas fa-pizza-slice text-5xl text-orange-500 mb-4"></i>
+                    <h3 class="text-xl font-bold">5 Pizzas</h3>
+                    <p class="text-gray-600 mt-2">5 pizzas 15 cm</p>
+                    <div class="mt-4">
+                        <span class="text-2xl font-bold text-orange-500">R$ 50,00</span>
+                        <span class="text-sm text-gray-500">+ entrega</span>
+                    </div>
+                    <button onclick="Cart.addCombo('5 Pizzas', 50)" class="btn-whatsapp inline-block mt-4 text-sm px-6 py-2 cursor-pointer">
+                        <i class="fab fa-whatsapp mr-2"></i> Pedir Agora
+                    </button>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                <div class="promo-badge text-white p-2 text-center font-bold"><i class="fas fa-tag mr-2"></i> OFERTA ESPECIAL</div>
+                <div class="p-6 text-center">
+                    <i class="fas fa-heart text-5xl text-orange-500 mb-4"></i>
+                    <h3 class="text-xl font-bold">5 Pizzas + Sobremesa</h3>
+                    <p class="text-gray-600 mt-2">5 pizzas 15 cm + 1 sobremesa</p>
+                    <div class="mt-4">
+                        <span class="text-2xl font-bold text-orange-500">R$ 50,00</span>
+                        <span class="text-sm text-gray-500">+ entrega</span>
+                    </div>
+                    <button onclick="Cart.addCombo('5 Pizzas + Sobremesa', 50)" class="btn-whatsapp inline-block mt-4 text-sm px-6 py-2 cursor-pointer">
+                        <i class="fab fa-whatsapp mr-2"></i> Pedir Agora
+                    </button>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                <div class="promo-badge text-white p-2 text-center font-bold"><i class="fas fa-tag mr-2"></i> OFERTA ESPECIAL</div>
+                <div class="p-6 text-center">
+                    <i class="fas fa-people-group text-5xl text-orange-500 mb-4"></i>
+                    <h3 class="text-xl font-bold">5 Pizzas + 2 Sobremesas</h3>
+                    <p class="text-gray-600 mt-2">5 pizzas 15 cm + 2 sobremesas</p>
+                    <div class="mt-4">
+                        <span class="text-2xl font-bold text-orange-500">R$ 50,00</span>
+                        <span class="text-sm text-gray-500">+ entrega</span>
+                    </div>
+                    <button onclick="Cart.addCombo('5 Pizzas + 2 Sobremesas', 50)" class="btn-whatsapp inline-block mt-4 text-sm px-6 py-2 cursor-pointer">
+                        <i class="fab fa-whatsapp mr-2"></i> Pedir Agora
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== QR CODE ==================== -->
+    <section class="py-16 px-4 bg-gray-900 text-white">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-4">Acesse nosso catálogo pelo QR Code</h2>
+            <p class="text-gray-400 mb-8">Escaneie com seu celular e veja nosso cardápio completo</p>
+            <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+                <div class="bg-white p-4 rounded-xl shadow-2xl">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://catalogo.qsabore.com.br&bgcolor=ffffff&color=000000&margin=10" alt="QR Code Qsabore" class="w-48 h-48 md:w-56 md:h-56" loading="lazy">
+                </div>
+                <div class="text-left">
+                    <p class="text-lg mb-2"><i class="fas fa-mobile-alt text-orange-500 mr-2"></i> Escaneie e veja o cardápio</p>
+                    <p class="text-lg mb-2"><i class="fas fa-whatsapp text-green-500 mr-2"></i> Faça seu pedido direto</p>
+                    <p class="text-lg"><i class="fas fa-tag text-orange-500 mr-2"></i> Aproveite as promoções</p>
+                    <a href="https://catalogo.qsabore.com.br" target="_blank" class="inline-block mt-6 bg-orange-500 hover:bg-orange-600 px-6 py-3 rounded-lg transition">
+                        <i class="fas fa-external-link-alt mr-2"></i> Acessar Catálogo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SOBRE ==================== -->
+    <section id="about" class="py-16 px-4 max-w-7xl mx-auto">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <h2 class="text-3xl font-bold mb-4">Sobre a Qsabore</h2>
+                <p class="text-gray-600 mb-4">Há mais de 10 anos, a Qsabore vem encantando clientes com pizzas feitas com ingredientes frescos e de qualidade.</p>
+                <p class="text-gray-600 mb-4">Nossa missão é oferecer a melhor experiência gastronômica com sabores que conquistam paladares e momentos especiais.</p>
+                <div class="flex flex-wrap gap-4 mt-6">
+                    <div class="flex items-center gap-2"><i class="fas fa-check-circle text-orange-500"></i><span>Ingredientes frescos</span></div>
+                    <div class="flex items-center gap-2"><i class="fas fa-check-circle text-orange-500"></i><span>Entrega rápida</span></div>
+                    <div class="flex items-center gap-2"><i class="fas fa-check-circle text-orange-500"></i><span>Preço justo</span></div>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-orange-100 p-6 rounded-xl text-center">
+                    <i class="fas fa-pizza-slice text-4xl text-orange-500 mb-2"></i>
+                    <p class="font-bold text-2xl">50+</p>
+                    <p class="text-gray-600">Sabores</p>
+                </div>
+                <div class="bg-green-100 p-6 rounded-xl text-center">
+                    <i class="fas fa-smile text-4xl text-green-500 mb-2"></i>
+                    <p class="font-bold text-2xl">1000+</p>
+                    <p class="text-gray-600">Clientes felizes</p>
+                </div>
+                <div class="bg-blue-100 p-6 rounded-xl text-center">
+                    <i class="fas fa-clock text-4xl text-blue-500 mb-2"></i>
+                    <p class="font-bold text-2xl">10+</p>
+                    <p class="text-gray-600">Anos de experiência</p>
+                </div>
+                <div class="bg-purple-100 p-6 rounded-xl text-center">
+                    <i class="fas fa-trophy text-4xl text-purple-500 mb-2"></i>
+                    <p class="font-bold text-2xl">5★</p>
+                    <p class="text-gray-600">Avaliações</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CONTATO ==================== -->
+    <section id="contact" class="py-16 px-4 bg-gray-50">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-4">Contato</h2>
+            <p class="text-center text-gray-600 mb-12">Entre em contato conosco</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="font-bold text-xl mb-4">Informações</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3"><i class="fas fa-map-marker-alt text-orange-500 text-xl mt-1"></i><div><p class="font-semibold">Endereço</p><p class="text-gray-600">Rua das Pizzas, 123 - Centro</p></div></div>
+                            <div class="flex items-start gap-3"><i class="fas fa-clock text-orange-500 text-xl mt-1"></i><div><p class="font-semibold">Horário</p><p class="text-gray-600">Segunda a Domingo: 18h às 23h</p></div></div>
+                            <div class="flex items-start gap-3"><i class="fas fa-phone text-orange-500 text-xl mt-1"></i><div><p class="font-semibold">Telefone</p><p class="text-gray-600">(47) 99287-2163</p></div></div>
+                            <div class="flex items-start gap-3"><i class="fab fa-whatsapp text-green-500 text-xl mt-1"></i><div><p class="font-semibold">WhatsApp</p><p class="text-gray-600">(47) 99287-2163</p></div></div>
+                            <div class="flex items-start gap-3"><i class="fab fa-instagram text-pink-500 text-xl mt-1"></i><div><p class="font-semibold">Instagram</p><p class="text-gray-600">@qsabore</p></div></div>
+                        </div>
+                        <div class="mt-6 flex gap-4">
+                            <a href="https://wa.me/5547992872163" target="_blank" class="btn-whatsapp flex-1 text-center text-sm"><i class="fab fa-whatsapp mr-2"></i> WhatsApp</a>
+                            <a href="https://instagram.com/qsabore" target="_blank" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg hover:shadow-xl transition flex-1 text-center text-sm"><i class="fab fa-instagram mr-2"></i> Instagram</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="font-bold text-xl mb-4">Envie uma mensagem</h3>
+                    <form onsubmit="sendMessage(event)">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nome</label>
+                            <input type="text" id="formName" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Mensagem</label>
+                            <textarea id="formMessage" rows="4" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-whatsapp w-full"><i class="fab fa-whatsapp mr-2"></i> Enviar pelo WhatsApp</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="bg-black text-white py-12 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold text-orange-500 mb-4">Qsabore</h3>
+                    <p class="text-gray-400">Sua pizza favorita com o melhor sabor da cidade.</p>
+                    <div class="flex gap-4 mt-4">
+                        <a href="https://instagram.com/qsabore" target="_blank" class="text-gray-400 hover:text-orange-500 transition"><i class="fab fa-instagram text-2xl"></i></a>
+                        <a href="https://wa.me/5547992872163" target="_blank" class="text-gray-400 hover:text-green-500 transition"><i class="fab fa-whatsapp text-2xl"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-4">Links Rápidos</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#home" class="hover:text-orange-500 transition">Home</a></li>
+                        <li><a href="#menu" class="hover:text-orange-500 transition">Cardápio</a></li>
+                        <li><a href="#promotions" class="hover:text-orange-500 transition">Promoções</a></li>
+                        <li><a href="#about" class="hover:text-orange-500 transition">Sobre</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-4">Contato</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><i class="fas fa-map-marker-alt text-orange-500 mr-2"></i> Rua das Pizzas, 123</li>
+                        <li><i class="fas fa-phone text-orange-500 mr-2"></i> (47) 99287-2163</li>
+                        <li><i class="fab fa-whatsapp text-green-500 mr-2"></i> (47) 99287-2163</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-4">Horário</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Segunda - Sexta: 18h - 23h</li>
+                        <li>Sábado: 18h - 00h</li>
+                        <li>Domingo: 18h - 23h</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2024 Qsabore. Todos os direitos reservados.</p>
+                <p class="mt-2"><i class="fas fa-heart text-red-500"></i> Feito com amor e pizza</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== WHATSAPP FLOATING ==================== -->
+    <a href="https://wa.me/5547992872163" target="_blank" class="whatsapp-float floating-whatsapp">
+        <div class="bg-green-500 text-white p-4 rounded-full shadow-2xl hover:bg-green-600 transition-all hover:scale-110">
+            <i class="fab fa-whatsapp text-3xl"></i>
+        </div>
+    </a>
+
+    <!-- ==================== SCROLL TO TOP ==================== -->
+    <button onclick="scrollToTop()" id="scrollTopBtn" class="fixed bottom-24 right-6 bg-orange-500 text-white p-3 rounded-full shadow-lg hover:bg-orange-600 transition hidden z-40">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- ==================== MODAL ==================== -->
+    <div id="pizzaModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content relative">
+            <button onclick="Modal.close()" class="modal-close"><i class="fas fa-times"></i></button>
+            <div id="modalBody" class="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- ==================== CART SIDEBAR ==================== -->
+    <div id="cartOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-[1500] hidden" onclick="Cart.toggle()"></div>
+    <div id="cartSidebar" class="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[1501] transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="flex items-center justify-between p-4 border-b">
+            <h2 class="text-xl font-bold"><i class="fas fa-shopping-cart text-orange-500 mr-2"></i>Meu Pedido</h2>
+            <button onclick="Cart.toggle()" class="text-gray-500 hover:text-gray-700 text-2xl"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-2"></div>
+        <div id="cartFooter" class="border-t p-4 space-y-3">
+            <div class="flex justify-between text-lg font-bold">
+                <span>Total</span>
+                <span id="cartTotal" class="text-orange-500">R$ 0,00</span>
+            </div>
+            <button onclick="Cart.checkout()" id="cartCheckoutBtn" class="btn-whatsapp w-full text-center">
+                <i class="fab fa-whatsapp mr-2"></i> Enviar Pedido
+            </button>
+            <button onclick="Cart.clear()" class="w-full text-center text-sm text-gray-500 hover:text-red-500 transition">
+                <i class="fas fa-trash mr-1"></i> Limpar carrinho
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        // =====================================================
+        // DATA LAYER
+        // =====================================================
+        const IMG = {
+            pizza1: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=250&fit=crop',
+            pizza2: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=250&fit=crop',
+            pizza3: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&h=250&fit=crop',
+            pizza4: 'https://images.unsplash.com/photo-1558138838-76294be30073?w=400&h=250&fit=crop',
+            pizza5: 'https://images.unsplash.com/photo-1566843972142-a7fcb758dee4?w=400&h=250&fit=crop',
+            pizza6: 'https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=400&h=250&fit=crop',
+            dessert: 'https://images.unsplash.com/photo-1588315029754-2dd089d39a07?w=400&h=250&fit=crop',
+            drink: 'https://images.unsplash.com/photo-1559320643-dbdcb0b29a7c?w=400&h=250&fit=crop',
+        };
+
+        const DATA = [
+            { id: 1, name: 'Margherita', description: 'Molho de tomate, mussarela, manjericão e azeite', price: 10, size: '15 cm', category: 'Tradicionais', ingredients: ['Molho de tomate', 'Mussarela', 'Manjericão', 'Azeite'], image: IMG.pizza1 },
+            { id: 2, name: 'Pepperoni', description: 'Molho de tomate, mussarela e pepperoni', price: 10, size: '15 cm', category: 'Tradicionais', ingredients: ['Molho de tomate', 'Mussarela', 'Pepperoni'], image: IMG.pizza2 },
+            { id: 3, name: 'Portuguesa', description: 'Molho de tomate, mussarela, presunto, ovos, cebola e azeitona', price: 10, size: '15 cm', category: 'Tradicionais', ingredients: ['Molho de tomate', 'Mussarela', 'Presunto', 'Ovos', 'Cebola', 'Azeitona'], image: IMG.pizza3 },
+            { id: 4, name: 'Calabresa', description: 'Molho de tomate, mussarela, calabresa e cebola', price: 10, size: '15 cm', category: 'Tradicionais', ingredients: ['Molho de tomate', 'Mussarela', 'Calabresa', 'Cebola'], image: IMG.pizza4 },
+            { id: 5, name: 'Frango com Catupiry', description: 'Molho de tomate, mussarela, frango desfiado e catupiry', price: 10, size: '15 cm', category: 'Tradicionais', ingredients: ['Molho de tomate', 'Mussarela', 'Frango', 'Catupiry'], image: IMG.pizza5 },
+            { id: 6, name: 'Quatro Queijos', description: 'Molho de tomate, mussarela, provolone, parmesão e gorgonzola', price: 10, size: '15 cm', category: 'Tradicionais', ingredients: ['Molho de tomate', 'Mussarela', 'Provolone', 'Parmesão', 'Gorgonzola'], image: IMG.pizza1 },
+            { id: 7, name: 'Napolitana', description: 'Molho de tomate, mussarela, parmesão, alho e manjericão', price: 10, size: '15 cm', category: 'Tradicionais', ingredients: ['Molho de tomate', 'Mussarela', 'Parmesão', 'Alho', 'Manjericão'], image: IMG.pizza2 },
+            { id: 8, name: 'Vegetariana', description: 'Molho de tomate, mussarela, legumes grelhados e azeitonas', price: 10, size: '15 cm', category: 'Tradicionais', ingredients: ['Molho de tomate', 'Mussarela', 'Legumes', 'Azeitonas'], image: IMG.pizza4 },
+            { id: 9, name: 'Pizza Supreme', description: 'Molho de tomate, mussarela, pepperoni, bacon, cebola e pimentão', price: 10, size: '15 cm', category: 'Especiais', ingredients: ['Molho de tomate', 'Mussarela', 'Pepperoni', 'Bacon', 'Cebola', 'Pimentão'], image: IMG.pizza6 },
+            { id: 10, name: 'Havaiana', description: 'Molho de tomate, mussarela, presunto e abacaxi', price: 10, size: '15 cm', category: 'Especiais', ingredients: ['Molho de tomate', 'Mussarela', 'Presunto', 'Abacaxi'], image: IMG.pizza5 },
+            { id: 11, name: 'Pizza de Carne Seca', description: 'Molho de tomate, mussarela, carne seca e cebola roxa', price: 10, size: '15 cm', category: 'Especiais', ingredients: ['Molho de tomate', 'Mussarela', 'Carne seca', 'Cebola roxa'], image: IMG.pizza3 },
+            { id: 12, name: 'Pizza de Camarão', description: 'Molho de tomate, mussarela, camarão e catupiry', price: 10, size: '15 cm', category: 'Especiais', ingredients: ['Molho de tomate', 'Mussarela', 'Camarão', 'Catupiry'], image: IMG.pizza6 },
+            { id: 13, name: 'Pizza de Alho e Óleo', description: 'Molho de tomate, mussarela, alho frito e azeite', price: 10, size: '15 cm', category: 'Especiais', ingredients: ['Molho de tomate', 'Mussarela', 'Alho', 'Azeite'], image: IMG.pizza4 },
+            { id: 14, name: 'Pizza de Rúcula com Tomate Seco', description: 'Molho de tomate, mussarela, rúcula e tomate seco', price: 10, size: '15 cm', category: 'Especiais', ingredients: ['Molho de tomate', 'Mussarela', 'Rúcula', 'Tomate seco'], image: IMG.pizza3 },
+            { id: 15, name: 'Pizza de Chocolate', description: 'Chocolate ao leite derretido com granulado', price: 10, size: '15 cm', category: 'Doces', ingredients: ['Chocolate', 'Granulado', 'Leite condensado'], image: IMG.dessert },
+            { id: 16, name: 'Pizza de Morango', description: 'Morango com chocolate branco e leite condensado', price: 10, size: '15 cm', category: 'Doces', ingredients: ['Morango', 'Chocolate branco', 'Leite condensado'], image: IMG.dessert },
+            { id: 17, name: 'Pizza de Doce de Leite', description: 'Doce de leite com coco ralado', price: 10, size: '15 cm', category: 'Doces', ingredients: ['Doce de leite', 'Coco ralado'], image: IMG.dessert },
+            { id: 18, name: 'Refrigerante 2L', description: 'Coca-Cola, Guarana ou Fanta', price: 10, size: '2L', category: 'Bebidas', ingredients: ['Refrigerante'], image: IMG.drink },
+            { id: 19, name: 'Suco Natural', description: 'Laranja, limão ou maracujá', price: 10, size: '500 ml', category: 'Bebidas', ingredients: ['Fruta'], image: IMG.drink },
+            { id: 20, name: 'Água Mineral', description: 'Água com gás ou sem gás', price: 10, size: '500 ml', category: 'Bebidas', ingredients: ['Água'], image: IMG.drink }
+        ];
+
+        // =====================================================
+        // CATALOG
+        // =====================================================
+        const Catalog = {
+            category: 'Todos',
+
+            init() {
+                document.querySelector('.filter-btn')?.classList.add('bg-orange-500', 'text-white');
+                this.render();
+            },
+
+            get filtered() {
+                const q = document.getElementById('searchInput').value.trim().toLowerCase();
+                let list = DATA;
+                if (this.category !== 'Todos') list = list.filter(p => p.category === this.category);
+                if (q) list = list.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
+                return list;
+            },
+
+            render() {
+                const grid = document.getElementById('pizzaGrid');
+                const noResults = document.getElementById('noResults');
+                const items = this.filtered;
+
+                if (!items.length) {
+                    grid.innerHTML = '';
+                    noResults.classList.remove('hidden');
+                    return;
+                }
+                noResults.classList.add('hidden');
+
+                grid.innerHTML = items.map(p => `
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                        <div class="relative">
+                            <img src="${p.image}" alt="${p.name}" class="w-full h-48 object-cover" loading="lazy">
+                            <span class="absolute top-2 right-2 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">R$ ${p.price},00</span>
+                            <span class="absolute top-2 left-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded-full">${p.category}</span>
+                            <span class="absolute bottom-2 left-2 bg-white bg-opacity-90 text-gray-800 text-xs font-semibold px-2 py-1 rounded-full shadow">${p.size}</span>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-xl font-bold">${p.name}</h3>
+                            <p class="text-gray-600 text-sm mt-1">${p.description}</p>
+                            <div class="mt-2 flex flex-wrap gap-1">${p.ingredients.map(i => `<span class="text-xs bg-gray-100 px-2 py-1 rounded-full">${i}</span>`).join('')}</div>
+                            <div class="flex items-center justify-between mt-4 pt-4 border-t">
+                                <span class="text-2xl font-bold text-orange-500">R$ ${p.price},00</span>
+                                <div class="flex gap-2">
+                                    <button onclick="Modal.open(${p.id})" class="text-orange-500 hover:text-orange-600 text-sm font-medium"><i class="fas fa-info-circle"></i></button>
+                                    <button onclick="Cart.add(${p.id})" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-lg transition flex items-center gap-1 text-sm cursor-pointer">
+                                        <i class="fas fa-plus"></i> Adicionar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            filter(cat) {
+                this.category = cat;
+                document.getElementById('searchInput').value = '';
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('bg-orange-500', 'text-white');
+                    btn.classList.add('bg-gray-200');
+                    if (btn.textContent.trim() === cat) {
+                        btn.classList.remove('bg-gray-200');
+                        btn.classList.add('bg-orange-500', 'text-white');
+                    }
+                });
+                this.render();
+            }
+        };
+
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', () => Catalog.render());
+
+        function scrollToMenu() {
+            document.getElementById('menu').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // =====================================================
+        // MODAL
+        // =====================================================
+        const Modal = {
+            open(id) {
+                const p = DATA.find(x => x.id === id);
+                if (!p) return;
+                document.getElementById('modalBody').innerHTML = `
+                    <img src="${p.image}" alt="${p.name}" class="w-full h-56 object-cover rounded-lg mb-4">
+                    <h2 class="text-2xl font-bold mb-1">${p.name}</h2>
+                    <span class="inline-block bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full mb-3">${p.category}</span>
+                    <p class="text-gray-600 mb-4">${p.description}</p>
+                    <h4 class="font-semibold mb-2 text-gray-700">Ingredientes</h4>
+                    <div class="flex flex-wrap gap-2 mb-6">${p.ingredients.map(i => `<span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">${i}</span>`).join('')}</div>
+                    <div class="flex items-center justify-between pt-4 border-t">
+                        <div>
+                        <span class="text-3xl font-bold text-orange-500">R$ ${p.price},00</span>
+                        <span class="block text-sm text-gray-500 mt-1">${p.size}</span>
+                    </div>
+                    <button onclick="Cart.add(${p.id}); Modal.close();" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg transition flex items-center gap-2 font-semibold cursor-pointer">
+                        <i class="fas fa-plus"></i> Adicionar
+                    </button>
+                    </div>
+                `;
+                document.getElementById('pizzaModal').classList.add('open');
+                document.body.style.overflow = 'hidden';
+            },
+            close() {
+                document.getElementById('pizzaModal').classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        };
+
+        function closeModal(e) {
+            if (e.target === e.currentTarget) Modal.close();
+        }
+
+        // =====================================================
+        // CART
+        // =====================================================
+        const Cart = {
+            items: [],
+
+            init() {
+                try {
+                    const saved = localStorage.getItem('qsabore_cart');
+                    if (saved) this.items = JSON.parse(saved);
+                } catch {}
+                this.updateUI();
+            },
+
+            save() {
+                localStorage.setItem('qsabore_cart', JSON.stringify(this.items));
+            },
+
+            add(id) {
+                const p = DATA.find(x => x.id === id);
+                if (!p) return;
+                const existing = this.items.find(i => i.id === id && !i.isCombo);
+                if (existing) {
+                    existing.qty += 1;
+                } else {
+                    this.items.push({ id: p.id, name: p.name, price: p.price, qty: 1, isCombo: false });
+                }
+                this.save();
+                this.updateUI();
+            },
+
+            addCombo(name, price) {
+                const id = 'combo_' + Date.now();
+                this.items.push({ id, name, price, qty: 1, isCombo: true });
+                this.save();
+                this.updateUI();
+            },
+
+            remove(id) {
+                this.items = this.items.filter(i => i.id !== id);
+                this.save();
+                this.updateUI();
+            },
+
+            updateQty(id, delta) {
+                const item = this.items.find(i => i.id === id);
+                if (!item) return;
+                const newQty = item.qty + delta;
+                if (newQty <= 0) {
+                    this.remove(id);
+                } else {
+                    item.qty = newQty;
+                    this.save();
+                    this.updateUI();
+                }
+            },
+
+            get total() {
+                return this.items.reduce((sum, i) => sum + i.price * i.qty, 0);
+            },
+
+            get count() {
+                return this.items.reduce((sum, i) => sum + i.qty, 0);
+            },
+
+            toggle() {
+                const sidebar = document.getElementById('cartSidebar');
+                const overlay = document.getElementById('cartOverlay');
+                const isOpen = !sidebar.classList.contains('translate-x-full');
+                sidebar.classList.toggle('translate-x-full');
+                overlay.classList.toggle('hidden');
+                document.body.style.overflow = isOpen ? '' : 'hidden';
+            },
+
+            updateUI() {
+                const count = this.count;
+                const badgeD = document.getElementById('cartBadgeDesktop');
+                const badgeM = document.getElementById('cartBadgeMobile');
+                badgeD.textContent = count;
+                badgeM.textContent = count;
+                badgeD.classList.toggle('hidden', count === 0);
+                badgeM.classList.toggle('hidden', count === 0);
+
+                const container = document.getElementById('cartItems');
+                if (!this.items.length) {
+                    container.innerHTML = '<div class="text-center py-12 text-gray-400"><i class="fas fa-shopping-cart text-5xl mb-4"></i><p class="font-medium">Carrinho vazio</p><p class="text-sm">Adicione itens do cardápio</p></div>';
+                    document.getElementById('cartTotal').textContent = 'R$ 0,00';
+                    return;
+                }
+
+                container.innerHTML = this.items.map(item => `
+                    <div class="flex items-center gap-3 bg-gray-50 rounded-lg p-3">
+                        <div class="flex-1 min-w-0">
+                            <p class="font-semibold text-sm truncate">${item.name}</p>
+                            <p class="text-xs text-gray-500">R$ ${item.price},00 cada</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="Cart.updateQty('${item.id}', -1)" class="cart-qty-btn text-sm">−</button>
+                            <span class="font-bold w-6 text-center text-sm">${item.qty}</span>
+                            <button onclick="Cart.updateQty('${item.id}', 1)" class="cart-qty-btn text-sm">+</button>
+                        </div>
+                        <div class="text-right min-w-[70px]">
+                            <p class="font-bold text-sm">R$ ${(item.price * item.qty).toFixed(2).replace('.', ',')}</p>
+                            <button onclick="Cart.remove('${item.id}')" class="text-xs text-red-500 hover:text-red-700 cursor-pointer"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+
+                document.getElementById('cartTotal').textContent = 'R$ ' + this.total.toFixed(2).replace('.', ',');
+            },
+
+            checkout() {
+                if (!this.items.length) return;
+                const lines = this.items.map(i =>
+                    '• ' + i.qty + 'x ' + i.name + ' = R$ ' + (i.price * i.qty).toFixed(2).replace('.', ',')
+                ).join('\n');
+                const totalStr = 'Total: R$ ' + this.total.toFixed(2).replace('.', ',');
+                const text = 'Olá! Gostaria de fazer um pedido:\n\n' + lines + '\n\n' + totalStr;
+                window.open('https://wa.me/5547992872163?text=' + encodeURIComponent(text), '_blank');
+            },
+
+            clear() {
+                if (!this.items.length) return;
+                if (confirm('Limpar todos os itens do carrinho?')) {
+                    this.items = [];
+                    this.save();
+                    this.updateUI();
+                }
+            }
+        };
+
+        // =====================================================
+        // UTILITIES
+        // =====================================================
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+        function closeMobileMenu() {
+            document.getElementById('mobileMenu').classList.add('hidden');
+        }
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function sendMessage(event) {
+            event.preventDefault();
+            const name = document.getElementById('formName').value;
+            const message = document.getElementById('formMessage').value;
+            window.open('https://wa.me/5547992872163?text=' + encodeURIComponent('Olá! Meu nome é ' + name + '. ' + message), '_blank');
+        }
+
+        window.addEventListener('scroll', () => {
+            document.getElementById('scrollTopBtn').classList.toggle('hidden', window.scrollY <= 300);
+        });
+
+        // =====================================================
+        // INIT
+        // =====================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            Catalog.init();
+            Cart.init();
+        });
+    </script>
+</body>
+</html>

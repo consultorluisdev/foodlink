@@ -1,0 +1,42 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstats
+*.userprefs
+*.csproj.user
+packages/
+*.nupkg
+
+# Flutter
+Frontend/pizza_mobile/build/
+Frontend/pizza_mobile/.dart_tool/
+Frontend/pizza_mobile/.packages
+Frontend/pizza_mobile/.pub/
+Frontend/pizza_mobile/pubspec.lock
+Frontend/pizza_mobile/ios/Pods/
+Frontend/pizza_mobile/ios/.symlinks/
+Frontend/pizza_mobile/android/.gradle/
+Frontend/pizza_mobile/android/local.properties
+Frontend/pizza_mobile/android/key.properties
+
+# Node
+node_modules/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.swp
+*.swo
+.sixth/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+appsettings.Development.json
+*.Development.json

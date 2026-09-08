@@ -21,7 +21,9 @@ public class Category
 
   public DateTime CreatedAt { get; set; }
 
+  public DateTime UpdatedAt { get; set;}
+
   // navigation Property
-  public virtual ICollection<Product> Product { get; set;} = new List<Product>();
+  public virtual ICollection<Product> Products { get; set;} = new List<Product>();
 
 }

@@ -56,11 +56,12 @@ public class CategoriesController : ControllerBase
     })
     .FirstOrDefaultAsync();
 
-    if(category = null)
+    if(category == null)
       return NotFound(new { message = "Categoria não encontrada" });
 
-    return Ok(category)
+    return Ok(category);
   }
+
   // post: api/categoires
   [HttpPost]
   public async Task<ActionResult<CategoryResponseDto>> CreatedCategory(CreateCategoryDto createDto)
@@ -94,17 +95,19 @@ public class CategoriesController : ControllerBase
         ProductCount = 0
       };
       return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, response);
+  }
 
       // put: api/categorories/{id}
-      [HttpPut{id}]
-      public async Task<IActionResult> UpdatedCategory(int id, UpdateCategoryDto)
+      [HttpPut("{id}")]
+      public async Task<IActionResult> UpdatedCategory(int id, UpdateCategoryDto updateDto)
   {
-    var category = await _context.Categories.FindAsync(id);
-    if(category == null)
-      return NotFound(c.Id != id && c.Name.ToLower() == updateDto.Name.ToLower());
+   var category = await _context.Categories.FindAsync(id);
+   if(category == null)
+      return NotFound(new { message = "Categoria não encontrada "});
 
-      if(exists)
-        return Conflict(new { message = "Já existe outra categoria com este nome"});
+   var exists = await _context.Categories
+      .AnyAsync(c => c.Id != id && c.Name.ToLower() == updateDto.Name.ToLower());
+    if(exists)
 
         category.Name = updateDto.Name;
         category.Description = updateDto.Description;

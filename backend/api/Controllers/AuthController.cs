@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
-using App.Data;
-using App.Entities;
+using api.Data;
+using api.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 
-namespace App.Controllers;
+namespace api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
         {
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
- 
+
             return Ok(new { message = "Usuario criado com sucesso" });
         }
         catch (Exception ex)
@@ -45,4 +45,4 @@ public class AuthController : ControllerBase
             return Ok(new { message = "Login Ok ", user.Email });
         }
 
-    } 
+    }

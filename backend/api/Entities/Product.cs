@@ -13,6 +13,8 @@ public class Product
 
   [Required]
   [MaxLength(200)]
+
+  public string Name { get; set; } = string.Empty;
   public string? Description { get; set; }
 
   [Column(TypeName = "decimal(18,2)")]
@@ -21,13 +23,13 @@ public class Product
   [Column(TypeName = "decimal(18,2)")]
   public decimal CostPrice { get; set; }
 
-  public int stock { get; set; }
+  public int Stock { get; set; }
 
   [Required]
   public int CategoryId { get; set; }
 
   [MaxLength(500)]
-  public string: ImageUrl { get; set; }
+  public string? ImageUrl { get; set; }
 
   public bool IsActive { get; set; } = true;
 

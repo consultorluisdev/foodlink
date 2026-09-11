@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CatalogData } from '../types/catalog';
+import type { CatalogData } from '../types/catalog';
 import {
   mockRestaurant,
   mockCategories,

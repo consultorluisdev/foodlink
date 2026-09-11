@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useCatalog } from "./hooks/useCatalog";
+import { useCart } from "./context/CartContext";
+import { CartDrawer } from "./components/CartDrawer";
 
 function formatBRL(value: number) {
   return value.toFixed(2).replace(".", ",");
@@ -7,8 +9,10 @@ function formatBRL(value: number) {
 
 function App() {
   const { catalog, loading } = useCatalog();
+  const { addItem, totalItems } = useCart()
 
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   if (loading) {
     return (
@@ -37,14 +41,14 @@ function App() {
       : products.filter((product) => product.categoryId === selectedCategory);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black text-cream">
       {/* HEADER */}
 
-      <header className="sticky top-0 z-50 bg-white border-b">
+      <header className="sticky top-0 z-50 bg-black border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
             <h1
-              className="text-xl md:text-2xl font-bold"
+              className="text-xl md:text-2xl font-bold text-gold"
               style={{
                 color: restaurant.theme.primaryColor,
               }}
@@ -57,26 +61,29 @@ function App() {
           </div>
 
           <button
-            className="px-4 py-2 rounded-lg text-white font-medium"
-            style={{
-              backgroundColor: restaurant.theme.primaryColor,
-            }}
+            className="btn-gold relative px-4 py-2"
+            onClick={() => setIsCartOpen(true)}
           >
             🛒 Carrinho
+            {totalItems > 0 && (
+              <span className="cart-badge absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center px-1">
+                {totalItems}
+              </span>
+            )}
           </button>
         </div>
       </header>
 
       {/* HERO */}
       <section
-        className="text-white"
+        className="hero-gradient text-white"
         style={{
-          backgroundColor: restaurant.theme.primaryColor,
+          backgroundColor: restaurant.theme.secondaryColor,
         }}
       >
         <div className="max-w-7xl mx-auto px-4 py-16">
           <div className="max-w-2xl">
-            <span className="inline-block px-3 py-1 rounded-full text-sm font-medium mb-4 bg-white/20">
+            <span className="inline-block px-3 py-1 rounded-full text-sm font-medium mb-4 bg-gold">
               🍗 Peça agora
             </span>
             <h2 className="text-4xl md:text-6xl font-bold mb-4">
@@ -85,15 +92,13 @@ function App() {
             <p className="text-lg text-white/80 mb-6">
               {restaurant.description}
             </p>
+
+            {/* botao do whatsApp*/}
             <a
               href={`https://wa.me/${restaurant.whatsapp}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold"
-              style={{
-                backgroundColor: "#FFFFFF",
-                color: restaurant.theme.primaryColor,
-              }}
             >
               📲 Falar no WhatsApp
             </a>
@@ -101,8 +106,8 @@ function App() {
         </div>
       </section>
       {/* CATEGORIAS */}
-      <section className="max-w-7xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold mb-5">Nosso Cardápio</h2>
+      <section className="max-w-7xl mx-auto px-4 py-8 bg-black">
+        <h2 className="text-2xl font-bold mb-5 text-cream">Nosso Cardápio</h2>
         <div className="flex gap-2 overflow-x-auto pb-2">
           <button
             onClick={() => setSelectedCategory("all")}
@@ -111,13 +116,6 @@ function App() {
                 ? "text-white"
                 : "bg-gray-100 text-gray-700"
             }`}
-            style={
-              selectedCategory === "all"
-                ? {
-                    backgroundColor: restaurant.theme.primaryColor,
-                  }
-                : undefined
-            }
           >
             Todos
           </button>
@@ -134,13 +132,6 @@ function App() {
                     ? "text-white"
                     : "bg-gray-100 text-gray-700"
                 }`}
-                style={
-                  selectedCategory === category.id
-                    ? {
-                        backgroundColor: restaurant.theme.primaryColor,
-                      }
-                    : undefined
-                }
               >
                 {category.name}
               </button>
@@ -157,14 +148,14 @@ function App() {
               const finalPrice = product.promotionalPrice ?? product.price;
 
               const hasPromotion = product.promotionalPrice !== undefined;
-
               return (
                 <article
                   key={product.id}
-                  className="bg-white rounded-2xl overflow-hidden border shadow-sm"
+                  className="product-card"
                 >
+
                   {/* IMAGEM TEMPORARIA */}
-                  <div className="h-48 bg-gray-100 flex items-center justify-center">
+                  <div className="h-48 bg-wood-light flex items-center justify-center">
                     <span className="text-6xl">🍗</span>
                   </div>
 
@@ -183,7 +174,7 @@ function App() {
                       )}
 
                       <span
-                        className="text-xl font-bold"
+                        className="text-xl font-bold text-gold"
                         style={{
                           color: restaurant.theme.primaryColor,
                         }}
@@ -193,10 +184,11 @@ function App() {
                     </div>
 
                     <button
-                      className="w-full py-3 rounded-lg text-white font-semibold"
+                      className="btn-gold w-full py-3"
                       style={{
                         backgroundColor: restaurant.theme.primaryColor,
                       }}
+                      onClick={() => addItem(product)}
                     >
                       + Adicionar
                     </button>
@@ -207,13 +199,21 @@ function App() {
         </div>
       </main>
       {/* FOOTER */}
-      <footer className="border-t bg-white">
+      <footer className="border-t bg-white/10 bg-char">
         <div className="max-w-7xl mx-auto px-4 py-8 text-center">
-          <h3 className="font-bold text-lg mb-2">{restaurant.name}</h3>
-          <p className="text-sm text-gray-500">{restaurant.address}</p>
-          <p className="text-sm text-gray-500">{restaurant.phone}</p>
+          <h3 className="font-bold text-lg mb-2 text-gold">{restaurant.name}</h3>
+          <p className="text-sm text-gold-pale">{restaurant.address}</p>
+          <p className="text-sm text-gold-pale">{restaurant.phone}</p>
         </div>
       </footer>
+
+      <CartDrawer
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        restaurantName={restaurant.name}
+        whatsapp={restaurant.whatsapp}
+        primaryColor={restaurant.theme.primaryColor}
+      />
     </div>
   );
 }

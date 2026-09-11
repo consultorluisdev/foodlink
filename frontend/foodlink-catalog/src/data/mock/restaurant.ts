@@ -1,4 +1,4 @@
-import { Restaurant } from '../../types/restaurant';
+import type { Restaurant } from '../../types/restaurant';
 
 export const mockRestaurant: Restaurant = {
   id: '1',

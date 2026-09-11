@@ -1,6 +1,6 @@
-import { Restaurant } from './restaurant';
-import { Category } from './category';
-import { Product } from './product';
+import type { Restaurant } from './restaurant';
+import type { Category } from './category';
+import type { Product } from './product';
 
 export interface CatalogData {
   restaurant: Restaurant;

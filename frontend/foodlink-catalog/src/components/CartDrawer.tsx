@@ -30,15 +30,18 @@ export function CartDrawer({
     clearCart,
   } = useCart();
 
+  const lines = items.map((item) => {
+    const price = item.product.promotionalPrice ?? item.product.price;
+    const total = (price * item.quantity).toFixed(2).replace(".", ",");
+    return `• ${item.quantity}x ${item.product.name} = R$ ${total}`;
+  });
+  const totalStr = `Total: R$ ${totalPrice.toFixed(2).replace(".", ",")}`;
   const whatsappMessage = [
-    `Pedido - ${restaurantName}`,
+    `Olá! Gostaria de fazer um pedido no ${restaurantName}:`,
     "",
-    ...items.map((item) => {
-      const price = item.product.promotionalPrice ?? item.product.price;
-      return `- ${item.quantity}x ${item.product.name} (R$ ${formatBRL(price * item.quantity)})`;
-    }),
+    ...lines,
     "",
-    `Total: R$ ${formatBRL(totalPrice)}`,
+    totalStr,
   ].join("\n");
 
   const whatsappUrl = `https://wa.me/${whatsapp}?text=${encodeURIComponent(whatsappMessage)}`;
@@ -117,7 +120,7 @@ export function CartDrawer({
                   <li key={item.product.id} className="cart-item p-4">
                     <div className="flex gap-3">
                       <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-wood-light text-3xl">
-                        🍗
+                        <span aria-hidden>{item.product.emoji ?? "🍗"}</span>
                       </div>
 
                       <div className="min-w-0 flex-1">

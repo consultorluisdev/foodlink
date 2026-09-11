@@ -1,7 +1,26 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Product } from "../types/product";
 import type { CartItem } from "../types/catalog";
+
+const CART_STORAGE_KEY = "foodlink_cart";
+
+function loadCart(): CartItem[] {
+  try {
+    const saved = localStorage.getItem(CART_STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved) as CartItem[];
+      return Array.isArray(parsed)
+        ? parsed.filter(
+            (item) => item?.product?.id && typeof item?.quantity === "number",
+          )
+        : [];
+    }
+  } catch {
+    // ignore leituras inválidas
+  }
+  return [];
+}
 
 interface createContextData {
   items: CartItem[];
@@ -21,7 +40,15 @@ interface CartProviderProps {
 }
 
 export function CartProvider({ children }: CartProviderProps) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(loadCart);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+    } catch {
+      // armazenamento indisponível
+    }
+  }, [items]);
 
   function addItem(product: Product) {
     setItems((currentItems) => {

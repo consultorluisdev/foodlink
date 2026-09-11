@@ -9,6 +9,9 @@ export interface Restaurant {
   address: string;
   instagram: string;
   whatsapp: string;
+  whatsappSandra?: string;
+  tagline?: string;
+  hours?: string;
   theme: {
     primaryColor: string;
     secondaryColor: string;

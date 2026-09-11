@@ -1,0 +1,87 @@
+import type { BlogPost } from '../../types/blog';
+
+export const mockPosts: BlogPost[] = [
+  {
+    id: 1,
+    category: 'Bastidores',
+    title: 'Por que abrimos só aos sábados',
+    excerpt: 'Menos dias, mais capricho: entenda a decisão por trás do nosso horário e por que isso significa um frango melhor pra sua mesa.',
+    date: '15 ago 2026',
+    readTime: '3 min',
+    icon: '🏪',
+    body: [
+      'Muita gente pergunta por que o Foodlink abre só aos sábados. A resposta é simples: fazemos tudo do jeito da casa, sem pressa e sem linha de produção.',
+      'Cada frango vai pro forno com tempo pra pegar cor e sabor de verdade, a farofa é feita na hora e a maionese não sai de um balde industrial. Isso exige preparo — e preparo exige foco em um dia só.',
+      'No fim, é uma troca: menos dias na semana, mais capricho em cada combo que sai da garagem. E convenhamos, sábado combina mais com frango assado em família mesmo.',
+    ],
+  },
+  {
+    id: 2,
+    category: 'Receitas',
+    title: 'O segredo da nossa farofa (quase) revelado',
+    excerpt: 'Não vamos te dar a receita exata, mas contamos os ingredientes que fazem a diferença — e uma dica pra melhorar a sua em casa.',
+    date: '8 ago 2026',
+    readTime: '4 min',
+    icon: '🥣',
+    body: [
+      'Toda farofa boa começa com uma farinha de qualidade e bastante bacon — isso ninguém tira. Mas o que muda o jogo mesmo é a cebola bem dourada, quase no ponto de caramelizar, e um toque de cheiro-verde no final, fora do fogo, pra manter o verde vivo.',
+      'Nossa dica pra você tentar em casa: refogue a cebola na própria gordura do bacon, sem pressa, em fogo baixo. É esse tempo a mais que dá o sabor que ninguém sabe explicar, mas todo mundo sente.',
+      'De qualquer forma, se preferir pular o trabalho, a nossa já vem pronta em todo combo de sábado.',
+    ],
+  },
+  {
+    id: 3,
+    category: 'Dicas',
+    title: 'Como montar a mesa perfeita com o Combo Frango Assado',
+    excerpt: 'Frango, maionese, farofa e mais o quê? Sugestões simples pra deixar seu almoço de sábado ainda mais completo.',
+    date: '1 ago 2026',
+    readTime: '3 min',
+    icon: '🍽️',
+    body: [
+      'O Combo Frango Assado + Maionese + Farofa já resolve o prato principal, mas alguns acompanhamentos simples deixam a mesa ainda melhor:',
+      'Uma salada verde bem temperada corta a gordura do frango e refresca o paladar. Arroz branco solto é sempre bem-vindo pra quem gosta de "molhar" com a maionese. E pra fechar com chave de ouro, um vinagrete caseiro combina direto com a pele crocante do frango.',
+      'Bebida: nada como um suco natural gelado ou um refrigerante bem gelado pra acompanhar. Simples assim — o combo já faz o trabalho pesado.',
+    ],
+  },
+  {
+    id: 4,
+    category: 'Bastidores',
+    title: 'Da garagem de casa pro bairro inteiro',
+    excerpt: 'Como um forno na garagem virou o combo mais pedido do sábado na Rua Hercílio Luz.',
+    date: '25 jul 2026',
+    readTime: '4 min',
+    icon: '❤️',
+    body: [
+      'O Foodlink começou pequeno — literalmente numa garagem, com um forno e a vontade de fazer um frango assado que lembrasse comida de família.',
+      'O boca a boca fez o resto. O que era pra ser só pra vizinhos virou pedido certo de sábado pra quem mora perto da Rua Hercílio Luz, 325, e hoje quem pede já sabe: chamar no WhatsApp com o Luis ou a Sandra antes que acabe.',
+      'A gente segue com o mesmo espírito de garagem: sem pressa, sem industrializar, um frango de cada vez.',
+    ],
+  },
+  {
+    id: 5,
+    category: 'Dicas',
+    title: 'Guardando as sobras sem perder o sabor',
+    excerpt: 'Sobrou frango do combo? Veja como guardar e esquentar sem ressecar.',
+    date: '18 jul 2026',
+    readTime: '2 min',
+    icon: '📦',
+    body: [
+      'Se sobrar frango do combo (o que é raro por aqui), guarde na geladeira em um pote bem fechado por até 2 dias.',
+      'Na hora de esquentar, evite o micro-ondas direto — ele resseca a pele. Prefira um forno baixo, coberto com papel alumínio, por uns 10-15 minutos. A pele volta a ficar crocante e a carne não perde a suculência.',
+      'A farofa e a maionese aguentam bem até o dia seguinte, só não recomendamos congelar nenhum dos dois.',
+    ],
+  },
+  {
+    id: 6,
+    category: 'Receitas',
+    title: 'Pizza brotinho: o queridinho da criançada',
+    excerpt: 'Por que a pizza individual virou o item que as crianças pedem primeiro no cardápio.',
+    date: '11 jul 2026',
+    readTime: '2 min',
+    icon: '🍕',
+    body: [
+      'Nem só de frango vive o Foodlink. A pizza brotinho entrou no cardápio pra atender quem tem criança em casa — ou quem só quer beliscar algo antes do prato principal chegar.',
+      'Do tamanho certo pra não estragar o apetite pro frango, ela virou item certo em quase todo pedido de família. Uma unidade sai por R$10 e já dá pra pedir mais de um sabor pra dividir.',
+    ],
+  },
+];

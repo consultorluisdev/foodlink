@@ -4,9 +4,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        border: '#E4E4E7',
-        background: '#FFFFFF',
-        foreground: '#09090B',
+        border: 'rgba(217,164,65,0.15)',
+        background: '#0d0b08',
+        foreground: '#f6efe1',
         primary: {
           50: '#FFF7ED',
           100: '#FFEDD5',
@@ -19,6 +19,18 @@ export default {
           800: '#9A3412',
           900: '#7C2D12',
         },
+        gold: {
+          DEFAULT: '#d9a441',
+          deep: '#b37b22',
+          pale: '#f3e0ad',
+        },
+        cream: '#f6efe1',
+        char: '#17130f',
+        wood: {
+          DEFAULT: '#241a12',
+          light: '#2f2318',
+        },
+        ember: '#c1440e',
       },
     },
   },

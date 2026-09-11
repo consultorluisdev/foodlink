@@ -5,7 +5,10 @@ export interface Product {
   price: number;
   promotionalPrice?: number;
   imageUrl: string;
+  emoji?: string;
   categoryId: string;
+  size?: string;
+  ingredients?: string[];
   available: boolean;
   createdAt?: string;
   updatedAt?: string;

@@ -669,10 +669,10 @@ http://localhost:5167/swagger
 
 ## Checklist de Implementação
 
-- [ ] **Fase 0**: Backend — entities, controllers, migrations, seed
+- [x] **Fase 0**: Backend — entities ✔ (Cliente/Pedido/ItemPedido), controllers ✔ (Auth+Clientes, Pedidos em andamento), migrations ✔ (recriadas do zero) — **falta: seed + PedidosController finalizar**
 - [ ] **Fase 1**: Scaffold novo projeto + dependências
 - [ ] **Fase 2**: api.js + AuthContext + layouts + rotas
-- [ ] **Fase 3**: Login + Register
+- [x] **Fase 3**: Login + Register ✔ (auth funcional fim-a-fim 12/09)
 - [ ] **Fase 4**: Componentes reutilizáveis (Modal, KPICard, DataTable, Skeleton)
 - [ ] **Fase 5.1**: Dashboard
 - [ ] **Fase 5.2**: Categorias
@@ -682,3 +682,68 @@ http://localhost:5167/swagger
 - [ ] **Fase 5.6**: Pedidos
 - [ ] **Fase 6**: Apagar pizza-web
 - [ ] Testes finais com backend rodando
+
+---
+
+## 🔧 Auditoria 11/09/2026 — Correções para amanhã
+
+> Levantamento feito na revisão completa do projeto. Ordem = prioridade.
+
+### 1. 🔐 Autenticação (URGENTE — login está quebrado) — ✅ FEITO 12/09
+
+- `Controllers/AuthController.cs`:
+  - Senha salva/comparada em **texto puro** — implementar **BCrypt** (`BCrypt.Net-Next`). ✅
+  - `Register` não valida email duplicado nem usa DTO. ✅
+  - `Login` retorna apenas `{ message, email }` — o frontend espera `{ token, user }`. ✅ (`token` + `user {id,name,email,role}`)
+  - Sem JWT. **Implementar JWT** e retornar `token` + `user { id, name, email, role }`. ✅
+- `Entities/User.cs`: adicionar campos `Name` e `Role` ("Admin"/"Operador"). ✅
+- Frontend já está pronto para receber `token`/`user` (AuthContext + api.js com Bearer). ✅ — **login validado no foodlink-admin 12/09**
+- Extras: `Microsoft.AspNetCore.Authentication.JwtBearer` instalado, `TokenService` registrado no DI, `appsettings.json` com seção `Jwt`.
+
+### 2. 🆕 Entidades em falta (admin já tem telas vazias esperando) — 🟡 EM ANDAMENTO 12/09
+
+Criar + migrations + seed:
+- `Entities/Cliente.cs` — Nome, Email, Telefone, Ativo, CreatedAt, UpdatedAt ✅
+- `Entities/Pedido.cs` — ClienteId, Status (pendente/preparando/saiu/entregue/cancelado), ValorTotal, Observacao, Fiado ✅
+- `Entities/ItemPedido.cs` — PedidoId, ProdutoId, Quantidade, PrecoUnitario ✅
+- Controllers: `ClientesController` (CRUD) ✅ e `PedidosController` (GET com filtros, GET por id com itens, POST com itens, PATCH status) 🟡 **falta criar o arquivo**
+- Adicionar DbSets + Fluent API no `AppDbContext.cs` ✅
+- Migration única (`AddClientesPedidosItensPedido`) ✅ — migrations antigas apagadas e `InitialCreate` recriada do zero
+
+### 3. 📊 Dashboard com dados reais
+
+- `Controllers/DashboardController.cs` está 100% hardcoded (32/1280/18).
+- Conectar ao banco: pedidos do dia, faturamento, clientes, produtos.
+
+### 4. 🖥️ Conectar telas do admin (todas em `data=[]` / placeholder)
+
+- `Dashboard.jsx`, `Categorias.jsx`, `Produtos.jsx`, `Clientes.jsx`, `PDV.jsx`, `Pedidos.jsx`
+
+### 5. 🧹 Limpeza / consistência
+
+- Migrations duplicadas: `20260414205210_InitialCreate` e `20260414221026_InitailCreate` — unificar. ✅ **apagadas e recriadas do zero 12/09**
+- `api.csproj` target `net10.0` mas `obj/` ainda tem artefatos `net8.0` — limpar `obj/bin`.
+- Duplicação de catálogo: `catalogo/index.html` (Vercel) vs `frontend/foodlink-catalog` — decidir qual manter.
+- `frontend/pizza-web/` antigo — apagar (Fase 6) ou arquivar.
+- `TODO.md` e `README.md` desatualizados (ainda falam de PizzaERP).
+
+### 6. 🧪 Testes
+
+- Só existe `AuthControllerTests`. Criar testes para Products, Categories, Clientes, Pedidos e Dashboard.
+- Verificar se backend sobe e login real funciona fim-a-fim (frontend + API + PostgreSQL). ✅ **login validado 12/09**
+
+---
+
+## 📅 Log de progresso
+
+### 12/09/2026 — Auxiliado por IA
+- ✅ **Auth completa**: BCrypt + JWT + retorno `{token, user}`. Fim-a-fim funcionando (API 5167 + admin 5174). Usuários de teste criados: `admin@foodlink.com/123456`, `test@gmail.com/123456`.
+- ✅ Banco PostgreSQL via docker (`docker/docker-compose.yml`, porta 5433, db `pizza_db`).
+- ✅ Migrations recriadas do zero (`InitialCreate` + `AddClientesPedidosItensPedido`) — apagadas as antigas desalinhadas.
+- ✅ Entidades Cliente/Pedido/ItemPedido + AppDbContext + `ClientesController` (CRUD) funcionando.
+- 🟡 Pendente para retomar:
+  1. Criar `Controllers/PedidosController.cs` (código já passado no chat — está no bloco 3b).
+  2. Build + testar `/api/clientes` e `/api/pedidos` no Swagger.
+  3. Seed de categorias/produtos no `Program.cs`.
+  4. Item 3 (Dashboard com dados reais).
+  5. Item 4 (conectar telas do admin).

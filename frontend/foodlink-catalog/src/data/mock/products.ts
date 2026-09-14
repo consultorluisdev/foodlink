@@ -59,7 +59,7 @@ export const mockProducts: Product[] = [
     id: '5',
     name: 'Combo Família',
     description: '2 frangos assados + maionese + farofa',
-    price: 140,
+    price: 180,
     imageUrl: FRANGO_1,
     emoji: '👨‍👩‍👧‍👦',
     categoryId: 'combos',

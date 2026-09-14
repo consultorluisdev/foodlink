@@ -3,15 +3,9 @@ export interface Flavor {
   price: number;
 }
 
-export interface Flavor {
-  name: string;
-  price: number;
-}
-
 export interface Product {
   id: string;
   name: string;
-  sabor: string;
   description: string;
   price: number;
   promotionalPrice?: number;

@@ -31,9 +31,10 @@ export function CartDrawer({
   } = useCart();
 
   const lines = items.map((item) => {
-    const price = item.product.promotionalPrice ?? item.product.price;
+    const price = item.flavor?.price ?? item.product.promotionalPrice ?? item.product.price;
     const total = (price * item.quantity).toFixed(2).replace(".", ",");
-    return `• ${item.quantity}x ${item.product.name} = R$ ${total}`;
+    const detail = item.flavor ? ` (${item.flavor.name})` : "";
+    return `• ${item.quantity}x ${item.product.name}${detail} = R$ ${total}`;
   });
   const totalStr = `Total: R$ ${totalPrice.toFixed(2).replace(".", ",")}`;
   const whatsappMessage = [
@@ -114,10 +115,10 @@ export function CartDrawer({
             <ul className="space-y-3">
               {items.map((item) => {
                 const price =
-                  item.product.promotionalPrice ?? item.product.price;
+                  item.flavor?.price ?? item.product.promotionalPrice ?? item.product.price;
 
                 return (
-                  <li key={item.product.id} className="cart-item p-4">
+                  <li key={item.key} className="cart-item p-4">
                     <div className="flex gap-3">
                       <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-wood-light text-3xl">
                         <span aria-hidden>{item.product.emoji ?? "🍗"}</span>
@@ -131,13 +132,18 @@ export function CartDrawer({
                           <button
                             type="button"
                             className="shrink-0 rounded-full p-1 text-gold-pale/70 transition hover:bg-red-500/10 hover:text-red-400"
-                            onClick={() => removeItem(item.product.id)}
+                            onClick={() => removeItem(item.key)}
                             aria-label={`Remover ${item.product.name}`}
                             tabIndex={isOpen ? 0 : -1}
                           >
                             <Trash2 size={15} />
                           </button>
                         </div>
+                        {item.flavor && (
+                          <span className="text-sm text-gold-pale">
+                            Sabor: {item.flavor.name}
+                          </span>
+                        )}
                         <p className="text-sm text-gold-pale">
                           R$ {formatBRL(price)} un.
                         </p>
@@ -149,7 +155,7 @@ export function CartDrawer({
                         <button
                           type="button"
                           className="cart-qty-btn flex h-8 w-8 items-center justify-center"
-                          onClick={() => decreaseQuantity(item.product.id)}
+                          onClick={() => decreaseQuantity(item.key)}
                           aria-label="Diminuir quantidade"
                           tabIndex={isOpen ? 0 : -1}
                         >
@@ -161,7 +167,7 @@ export function CartDrawer({
                         <button
                           type="button"
                           className="cart-qty-btn flex h-8 w-8 items-center justify-center"
-                          onClick={() => increaseQuantity(item.product.id)}
+                          onClick={() => increaseQuantity(item.key)}
                           aria-label="Aumentar quantidade"
                           tabIndex={isOpen ? 0 : -1}
                         >

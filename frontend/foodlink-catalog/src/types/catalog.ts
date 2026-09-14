@@ -1,6 +1,6 @@
 import type { Restaurant } from './restaurant';
 import type { Category } from './category';
-import type { Product } from './product';
+import type { Flavor, Product } from './product';
 
 export interface CatalogData {
   restaurant: Restaurant;
@@ -9,6 +9,8 @@ export interface CatalogData {
 }
 
 export interface CartItem {
+  key: string;
   product: Product;
+  flavor?: Flavor;
   quantity: number;
 }

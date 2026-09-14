@@ -1,9 +1,13 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import type { Product } from "../types/product";
+import type { Flavor, Product } from "../types/product";
 import type { CartItem } from "../types/catalog";
 
 const CART_STORAGE_KEY = "foodlink_cart";
+
+export function itemKey(product: Product, flavor?: Flavor): string {
+  return `${product.id}::${flavor?.name ?? "default"}`;
+}
 
 function loadCart(): CartItem[] {
   try {
@@ -26,10 +30,10 @@ interface createContextData {
   items: CartItem[];
   totalItems: number;
   totalPrice: number;
-  addItem: (product: Product) => void;
-  removeItem: (productId: string) => void;
-  increaseQuantity: (productId: string) => void;
-  decreaseQuantity: (productId: string) => void;
+  addItem: (product: Product, flavor?: Flavor) => void;
+  removeItem: (key: string) => void;
+  increaseQuantity: (key: string) => void;
+  decreaseQuantity: (key: string) => void;
   clearCart: () => void;
 }
 
@@ -50,15 +54,14 @@ export function CartProvider({ children }: CartProviderProps) {
     }
   }, [items]);
 
-  function addItem(product: Product) {
+  function addItem(product: Product, flavor?: Flavor) {
+    const key = itemKey(product, flavor);
     setItems((currentItems) => {
-      const existing = currentItems.find(
-        (item) => item.product.id === product.id,
-      );
+      const existing = currentItems.find((item) => item.key === key);
 
       if (existing) {
         return currentItems.map((item) =>
-          item.product.id === product.id
+          item.key === key
             ? {
                 ...item,
                 quantity: item.quantity + 1,
@@ -66,20 +69,20 @@ export function CartProvider({ children }: CartProviderProps) {
             : item,
         );
       }
-      return [...currentItems, { product, quantity: 1 }];
+      return [...currentItems, { key, product, flavor, quantity: 1 }];
     });
   }
 
-  function removeItem(productId: string) {
+  function removeItem(key: string) {
     setItems((currentItems) =>
-      currentItems.filter((item) => item.product.id !== productId),
+      currentItems.filter((item) => item.key !== key),
     );
   }
 
-  function increaseQuantity(productId: string) {
+  function increaseQuantity(key: string) {
     setItems((currentItems) =>
       currentItems.map((item) =>
-        item.product.id === productId
+        item.key === key
           ? {
               ...item,
               quantity: item.quantity + 1,
@@ -89,11 +92,11 @@ export function CartProvider({ children }: CartProviderProps) {
     );
   }
 
-  function decreaseQuantity(productId: string) {
+  function decreaseQuantity(key: string) {
     setItems((currentItems) =>
       currentItems
         .map((item) =>
-          item.product.id === productId
+          item.key === key
             ? {
                 ...item,
                 quantity: item.quantity - 1,
@@ -111,7 +114,7 @@ export function CartProvider({ children }: CartProviderProps) {
     const totalItems = items.reduce((total, item) => total + item.quantity, 0);
 
     const totalPrice = items.reduce((total, item) => {
-      const price = item.product.promotionalPrice ?? item.product.price;
+      const price = item.flavor?.price ?? item.product.promotionalPrice ?? item.product.price;
       return total + price * item.quantity;
     }, 0);
 

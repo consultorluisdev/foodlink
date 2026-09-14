@@ -1,5 +1,5 @@
 import { Minus, Plus, ShoppingBag, X } from "lucide-react";
-import type { Product } from "../types/product";
+import type { Flavor, Product } from "../types/product";
 
 function formatBRL(value: number) {
   return value.toFixed(2).replace(".", ",");
@@ -10,7 +10,9 @@ interface ProductModalProps {
   quantity: number;
   primaryColor: string;
   categoryName?: string;
+  selectedFlavor: Flavor | null;
   onAdd: () => void;
+  onFlavorChange: (flavor: Flavor | null) => void;
   onIncrease: () => void;
   onDecrease: () => void;
   onClose: () => void;
@@ -21,7 +23,9 @@ export function ProductModal({
   quantity,
   primaryColor,
   categoryName,
+  selectedFlavor,
   onAdd,
+  onFlavorChange,
   onIncrease,
   onDecrease,
   onClose,
@@ -29,7 +33,9 @@ export function ProductModal({
   if (!product) return null;
 
   const finalPrice = product.promotionalPrice ?? product.price;
+  const unitPrice = selectedFlavor?.price ?? finalPrice;
   const hasPromotion = product.promotionalPrice !== undefined;
+  const needsFlavor = Boolean(product.flavors?.length) && !selectedFlavor;
 
   return (
     <div
@@ -99,10 +105,36 @@ export function ProductModal({
             </>
           )}
 
+          {product.flavors && product.flavors.length > 0 && (
+            <>
+              <h4 className="mb-2 mt-4 font-semibold text-[#c9bfae]">Sabores</h4>
+              <div className="mb-6 flex flex-wrap gap-2">
+                {product.flavors.map((flavor) => (
+                  <button
+                    key={flavor.name}
+                    type="button"
+                    onClick={() =>
+                      onFlavorChange(
+                        selectedFlavor?.name === flavor.name ? null : flavor,
+                      )
+                    }
+                    className={`rounded-full border px-3 py-1 text-sm transition ${
+                      selectedFlavor?.name === flavor.name
+                        ? "border-gold bg-gold font-bold text-[#1a1206]"
+                        : "border-gold/30 text-[#c9bfae] hover:border-gold/60"
+                    }`}
+                  >
+                    {flavor.name} · R$ {formatBRL(flavor.price)}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+
           <div className="flex items-center justify-between border-t border-gold/15 pt-4">
             <div>
               <span className="text-3xl font-bold text-gold">
-                R$ {formatBRL(finalPrice)}
+                R$ {formatBRL(unitPrice)}
               </span>
               {product.size && (
                 <span className="mt-1 block text-sm text-gold-pale">
@@ -135,7 +167,7 @@ export function ProductModal({
                   </button>
                 </div>
                 <span className="font-display text-lg text-gold">
-                  Total: R$ {formatBRL(finalPrice * quantity)}
+                  Total: R$ {formatBRL(unitPrice * quantity)}
                 </span>
               </div>
             ) : (
@@ -144,9 +176,10 @@ export function ProductModal({
                 className="btn-gold flex cursor-pointer items-center gap-2 px-6 py-3 font-semibold"
                 style={{ backgroundColor: primaryColor }}
                 onClick={onAdd}
+                disabled={needsFlavor}
               >
                 <ShoppingBag size={20} />
-                Adicionar
+                {needsFlavor ? "Escolha um sabor" : "Adicionar"}
               </button>
             )}
           </div>

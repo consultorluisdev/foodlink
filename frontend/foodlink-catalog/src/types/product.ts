@@ -1,6 +1,17 @@
+export interface Flavor {
+  name: string;
+  price: number;
+}
+
+export interface Flavor {
+  name: string;
+  price: number;
+}
+
 export interface Product {
   id: string;
   name: string;
+  sabor: string;
   description: string;
   price: number;
   promotionalPrice?: number;
@@ -9,6 +20,7 @@ export interface Product {
   categoryId: string;
   size?: string;
   ingredients?: string[];
+  flavors?: Flavor[];
   available: boolean;
   createdAt?: string;
   updatedAt?: string;

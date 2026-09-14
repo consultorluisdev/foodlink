@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import { useCatalog } from "./hooks/useCatalog";
-import { useCart } from "./context/CartContext";
+import { useCart, itemKey } from "./context/CartContext";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
 import { Categories } from "./components/Categories";
@@ -16,7 +16,7 @@ import { CartDrawer } from "./components/CartDrawer";
 import { ProductModal } from "./components/ProductModal";
 import { mockPosts } from "./data/mock";
 import type { Category } from "./types/category";
-import type { Product } from "./types/product";
+import type { Flavor, Product } from "./types/product";
 
 const CATALOG_URL = "https://catalogo.foodlink.com.br";
 
@@ -34,6 +34,7 @@ function App() {
   const [search, setSearch] = useState("");
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedFlavor, setSelectedFlavor] = useState<Flavor | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const toastTimer = useRef<number | null>(null);
@@ -50,10 +51,24 @@ function App() {
     toastTimer.current = window.setTimeout(() => setToast(null), 2200);
   };
 
-  const handleAddItem = (product: Product) => {
-    addItem(product);
-    showToast(`${product.emoji ?? "🍗"} ${product.name} adicionado!`);
+  const handleAddItem = (product: Product, flavor?: Flavor) => {
+    addItem(product, flavor);
+    showToast(`${product.emoji ?? "🍗"} ${product.name}${flavor ? ` (${flavor.name})` : ""} adicionado!`);
   };
+
+  const openProduct = (product: Product) => {
+    setSelectedProduct(product);
+    setSelectedFlavor(null);
+  };
+
+  const closeProduct = () => {
+    setSelectedProduct(null);
+    setSelectedFlavor(null);
+  };
+
+  const selectedKey = selectedProduct
+    ? itemKey(selectedProduct, selectedFlavor ?? undefined)
+    : "";
 
   const selectCategory = (category: string) => {
     setSelectedCategory(category);
@@ -160,7 +175,7 @@ function App() {
         search={search}
         onSearchChange={setSearch}
         onAdd={handleAddItem}
-        onOpen={setSelectedProduct}
+        onOpen={openProduct}
       />
 
       <Promotions promotions={promotions} onAdd={handleAddItem} />
@@ -200,20 +215,21 @@ function App() {
         categoryName={selectedCategoryName}
         quantity={
           selectedProduct
-            ? items.find((item) => item.product.id === selectedProduct.id)
-                ?.quantity ?? 0
+            ? items.find((item) => item.key === selectedKey)?.quantity ?? 0
             : 0
         }
         primaryColor={primary}
+        selectedFlavor={selectedFlavor}
         onAdd={() => {
           if (selectedProduct) {
-            handleAddItem(selectedProduct);
-            setSelectedProduct(null);
+            handleAddItem(selectedProduct, selectedFlavor ?? undefined);
+            closeProduct();
           }
         }}
-        onIncrease={() => selectedProduct && increaseQuantity(selectedProduct.id)}
-        onDecrease={() => selectedProduct && decreaseQuantity(selectedProduct.id)}
-        onClose={() => setSelectedProduct(null)}
+        onFlavorChange={setSelectedFlavor}
+        onIncrease={() => selectedProduct && increaseQuantity(selectedKey)}
+        onDecrease={() => selectedProduct && decreaseQuantity(selectedKey)}
+        onClose={closeProduct}
       />
     </div>
   );

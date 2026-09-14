@@ -23,7 +23,7 @@ export const mockProducts: Product[] = [
     id: '2',
     name: 'Meio Frango Assado',
     description: 'Metade do frango assado',
-    price: 32,
+    price: 35,
     imageUrl: FRANGO_2,
     emoji: '🍗',
     categoryId: 'assados',
@@ -65,6 +65,18 @@ export const mockProducts: Product[] = [
     categoryId: 'combos',
     size: 'Serve 6-8',
     ingredients: ['2x Frango', 'Maionese 300g', 'Farofa'],
+    available: true,
+  },
+  {
+    id: '6',
+    name: 'Combo Família',
+    description: '10 pizzas salgadas + 2 doces + farofa',
+    price: 100,
+    imageUrl: IMG_PIZZA,
+    emoji: '👨‍👩‍👧‍👦',
+    categoryId: 'combos',
+    size: 'Serve 6',
+    ingredients: ['10 pizzas', '2 doces'],
     available: true,
   },
   {
@@ -130,7 +142,7 @@ export const mockProducts: Product[] = [
     flavors: [{ name: 'Calabresa', price: 10.0 }],
     available: true,
   },
-{
+  {
     id: '16',
     name: 'Pizza de Portuguesa',
     description: 'Mini pizza Tam: 15cm',
@@ -140,9 +152,7 @@ export const mockProducts: Product[] = [
     categoryId: 'pizzas',
     size: 'Individual',
     ingredients: ['Molho de tomate', 'Mussarela', 'cebola', 'presunto', 'azeitona', 'oregáno'],
-    flavors: [
-      { name: 'Calabresa', price: 10 },
-    ],
+    flavors: [{ name: 'Calabresa', price: 10 }],
     available: true,
   },
   {

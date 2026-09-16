@@ -70,7 +70,7 @@ export const mockProducts: Product[] = [
   {
     id: '6',
     name: 'Combo Família',
-    description: '10 pizzas salgadas + 2 doces + farofa',
+    description: '10 pizzas salgadas + 2 doces',
     price: 100,
     imageUrl: IMG_PIZZA,
     emoji: '👨‍👩‍👧‍👦',

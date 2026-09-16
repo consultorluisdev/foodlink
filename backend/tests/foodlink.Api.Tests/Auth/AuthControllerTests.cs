@@ -1,3 +1,5 @@
+using api.Services;
+using Microsoft.Extensions.Configuration;
 using api.Controllers;
 using api.Data;
 using api.Entities;
@@ -18,21 +20,42 @@ public class AuthControllerTests
         return new AppDbContext(options);
     }
 
+    private static IConfiguration CriarConfigFalso()
+    {
+        return new ConfigurationBuilder()
+        .AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            {"Jwt:Key", "teste-Key-minimum-32-chars-long!!"},
+            {"Jwt:Issuer", "teste-Issuer"},
+            {"Jwt:Audience", "teste-Audience"},
+            {"Jwt:ExpiresInHours", "24"}
+        })
+        .Build();
+    }
+    private (AuthController controller, AppDbContext context)CriarController()
+    {
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+
+        var context = new AppDbContext(options);
+        var tokenService = new TokenService(CriarConfigFalso());
+        var controller = new AuthController(context, tokenService);
+
+        return (controller, context);
+
+    }
+
+
     [Fact]
     public async Task Register_DeveCriarUsuarioComSucesso()
     {
         // Arrange
-        await using var context = CriarContexto();
-        var controller = new AuthController(context);
-
-        var user = new User
-        {
-            Email = "teste@foodlink.com",
-            Password = "123456"
-        };
+        var (controller, context) = CriarController();
+        var dto = new RegisterDto("Teste", "teste@foodlink.com", "123456");
 
         // Act
-        var resultado = await controller.Register(user);
+        var resultado = await controller.Register(dto);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(resultado);
@@ -42,33 +65,22 @@ public class AuthControllerTests
 
         Assert.NotNull(usuario);
         Assert.Equal("teste@foodlink.com", usuario.Email);
-        Assert.Equal("123456", usuario.Password);
+        Assert.True(BCrypt.Net.BCrypt.Verify("123456", usuario.Password));
     }
 
     [Fact]
     public async Task Register_DeveRetornarBadRequest_QuandoEmailDuplicado()
     {
         // Arrange
-        await using var context = CriarContexto();
-        var controller = new AuthController(context);
-
-        var primeiroUsuario = new User
-        {
-            Email = "duplicado@foodlink.com",
-            Password = "123456"
-        };
-
-        var segundoUsuario = new User
-        {
-            Email = "duplicado@foodlink.com",
-            Password = "654321"
-        };
+        var (controller, context) = CriarController();
+        var primeiroDto = new RegisterDto("Primeiro", "duplicado@foodlink.com", "123456");
+        var segundoDto = new RegisterDto("Segundo", "duplicado@foodlink.com", "654321");
 
         // Act
-        await controller.Register(primeiroUsuario);
-        var resultado = await controller.Register(segundoUsuario);
+        await controller.Register(primeiroDto);
+        var resultado = await controller.Register(segundoDto);
 
         // Assert
         Assert.IsType<BadRequestObjectResult>(resultado);
     }
-}    
+}

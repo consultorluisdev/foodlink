@@ -1,12 +1,15 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using api.Data;
 using api.Entities;
+using api.DTOs.Pedidos;
 
 namespace api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class PedidosController : ControllerBase
 {
   private readonly AppDbContext _context;
@@ -51,7 +54,7 @@ public class PedidosController : ControllerBase
     {
       p.Id,
       p.ClienteId,
-      ClienteNome  = p.Cliente?.Nome,
+      ClienteNome = p.Cliente != null ? p.Cliente.Nome : null,
       p.Status,
       p.ValorTotal,
       p.Observacao,
@@ -61,7 +64,7 @@ public class PedidosController : ControllerBase
       {
         i.Id,
         i.ProdutoId,
-        ProdutoNome = i.Produto?.Nome,
+        ProdutoNome = i.Produto != null ? i.Produto.Name : null,
         i.Quantidade,
         i.PrecoUnitario
       }).ToList()
@@ -82,8 +85,8 @@ public class PedidosController : ControllerBase
       {
         p.Id,
         p.ClienteId,
-        ClienteNome = p.Cliente?.Nome,
-        ClienteTelefone = p.Cliente?.Telefone,
+        ClienteNome = p.Cliente != null ? p.Cliente.Nome : null,
+        ClienteTelefone = p.Cliente != null ? p.Cliente.Telefone : null,
         p.Status,
         p.ValorTotal,
         p.Observacao,
@@ -93,8 +96,8 @@ public class PedidosController : ControllerBase
         {
           i.Id,
           i.ProdutoId,
-          ProdutoNome = i.Produto?.Nome,
-          ProdutoPreco = i.Produto?.Price ?? 0,
+          ProdutoNome = i.Produto != null ? i.Produto.Name : null,
+          ProdutoPreco = i.Produto != null ? i.Produto.Price : 0,
           i.Quantidade,
           i.PrecoUnitario,
           Subtotal = i.Quantidade * i.PrecoUnitario
@@ -104,7 +107,7 @@ public class PedidosController : ControllerBase
 
     if (pedido == null)
       return NotFound(new { message = "Pedido não encontrado" });
-    return NotFound();
+    return Ok(pedido);
 
   }
   // POST: api/pedidos
@@ -161,7 +164,9 @@ public class PedidosController : ControllerBase
       {
         pedido.Id,
         pedido.ClienteId,
-        ClienteNome = pedido.Cliente?.Nome,
+        ClienteNome = pedido.Cliente != null ? pedido.Cliente.Nome : null,
+        ClienteTelefone = pedido.Cliente != null ? pedido.Cliente.Telefone : null,
+
         pedido.Status,
         pedido.ValorTotal,
         pedido.Observacao,
@@ -171,14 +176,51 @@ public class PedidosController : ControllerBase
         {
           i.Id,
           i.ProdutoId,
-          ProdutoNome = i.Produto?.Nome,
+          ProdutoNome = i.Produto?.Name,
           i.Quantidade,
           i.PrecoUnitario,
           Subtotal = i.Quantidade * i.PrecoUnitario
         })
       });
   }
-  // PATCH: api/pedidos/{id}status
+  // PATCH: api/pedidos/{id}/status
+  [HttpPatch("{id}/status")]
+  public async Task<IActionResult> UpdatePedidoStatus(int id, UpdatePedidoStatusDto statusDto)
+  {
+    var pedido = await _context.Pedidos.FindAsync(id);
+    if (pedido == null)
+      return NotFound(new { message = "Pedido não encontrado" });
 
+    var validStatuses = new[] { "Pendente", "Em preparo", "Saiu para entrega", "Entregue", "Cancelado" };
+    if (!validStatuses.Contains(statusDto.Status))
+      return BadRequest(new { message = $"Status inválido. Valores aceitos: {string.Join(", ", validStatuses)}" });
 
+    pedido.Status = statusDto.Status;
+
+    await _context.SaveChangesAsync();
+
+    return Ok(new
+    {
+      message = $"Status do pedido atualizado para '{statusDto.Status}' com sucesso",
+      status = pedido.Status
+    });
+  }
+
+  // DELETE: api/pedidos/{id}
+  [HttpDelete("{id}")]
+  public async Task<IActionResult> DeletePedido(int id)
+  {
+    var pedido = await _context.Pedidos
+      .Include(p => p.Itens)
+      .FirstOrDefaultAsync(p => p.Id == id);
+
+    if (pedido == null)
+      return NotFound(new { message = "Pedido não encontrado" });
+
+    _context.ItensPedido.RemoveRange(pedido.Itens);
+    _context.Pedidos.Remove(pedido);
+    await _context.SaveChangesAsync();
+
+    return NoContent();
+  }
 }

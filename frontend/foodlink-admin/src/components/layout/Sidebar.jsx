@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { LayoutDashboard, ShoppingCart, ClipboardList, Package, Tag, Users, LogOut, PanelLeftClose, PanelLeft } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
 
 const menuItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -14,9 +15,10 @@ export default function Sidebar({ collapsed, onToggle }) {
   const navigate = useNavigate()
   const location = useLocation()
 
+  const { logout } = useAuth()
+
   const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
+    logout()
     navigate('/login')
   }
 

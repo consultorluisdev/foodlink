@@ -1,6 +1,6 @@
 # 🍕 FoodLink — Auditoria do Projeto
 
-> Auditoria técnica completa realizada em **14/09/2026**
+> Auditoria técnica completa realizada em **14/09/2026** | Atualizado em **15/09/2026**
 > Objetivo: mapear o estado atual e definir o que fazer para deixar o projeto **funcional** e para o **foodlink-catalog receber dados reais da API**.
 
 ---
@@ -9,8 +9,8 @@
 
 | Componente | Compila? | Funcional? | Nível |
 |------------|----------|------------|-------|
-| Backend API (.NET) | ✅ | Parcialmente | 60% |
-| Testes (xUnit) | ❌ | Nunca passaram | 5% |
+| Backend API (.NET) | ✅ | Parcialmente | 70% |
+| Testes (xUnit) | ✅ | 2/2 passando | 30% |
 | Admin (`foodlink-admin`) | ✅ | Só Login/Register; resto em stub | 25% |
 | Catálogo (`foodlink-catalog`) | ✅ | SPA estática (mock), sem backend | 40% |
 | Docker | ✅ (só Postgres) | — | 20% |
@@ -67,7 +67,7 @@ postgres:15      → banco via docker (porta 5433, db `pizza_db`)
 ### 🔴 Críticos
 | # | Problema | Arquivo |
 |---|----------|---------|
-| 1 | Testes **não compilam** (5 erros CS7036/CS1503 — construtor e assinatura do `AuthController` desatualizados) | `backend/tests/.../AuthControllerTests.cs` |
+| 1 | Testes **não compilavam** (5 erros CS7036/CS1503 — construtor e assinatura do `AuthController` desatualizados) — **CORRIGIDO** | `backend/tests/.../AuthControllerTests.cs` |
 | 2 | **Secret key JWT commitada** no git | `backend/api/appsettings.json` |
 | 3 | **Connection string hardcoded** | `backend/api/Program.cs` |
 | 4 | Nenhum endpoint protegido (`[Authorize]` ausente) | Todos os Controllers |
@@ -76,7 +76,7 @@ postgres:15      → banco via docker (porta 5433, db `pizza_db`)
 ### 🟠 Altos
 | # | Problema | Arquivo |
 |---|----------|---------|
-| 6 | **Sem `PedidosController`** (entidades existem, controller não) | `backend/api/Controllers/` |
+| 6 | **Sem `PedidosController`** — **CRIADO** (`Controllers/PedidosController.cs`) | `backend/api/Controllers/PedidosController.cs` |
 | 7 | **Dashboard hardcoded** (32/1280/18 fixos) | `Controllers/DashboardController.cs` |
 | 8 | Admin: 6 páginas são **stubs** (`data=[]`, sem chamada à API) | `frontend/foodlink-admin/src/pages/` |
 | 9 | Catálogo: **zero integração com a API** (100% mock) | `frontend/foodlink-catalog/src/hooks/useCatalog.ts` |
@@ -107,8 +107,8 @@ postgres:15      → banco via docker (porta 5433, db `pizza_db`)
 ## 4. Plano de ação — deixar funcional
 
 ### Fase 1 — Base do backend 🎯
-- [ ] Corrigir `AuthControllerTests.cs` para a nova assinatura (2 params: `AppDbContext` + `TokenService`) e validar com BCrypt
-- [ ] Criar `Controllers/PedidosController.cs` (GET com filtros, GET por id com itens+cliente, POST com itens, PATCH status)
+- [x] Corrigir `AuthControllerTests.cs` para a nova assinatura (2 params: `AppDbContext` + `TokenService`) e validar com BCrypt
+- [x] Criar `Controllers/PedidosController.cs` (GET com filtros, GET por id com itens+cliente, POST com itens, PATCH status)
 - [ ] `DashboardController` com dados reais (pedidos do dia, faturamento, clientes, produtos)
 - [ ] Seed no `Program.cs`:
   - Usuário admin padrão (`admin@foodlink.com`)
@@ -152,4 +152,4 @@ admin cadastra produto → API produtos/categorias → catálogo (Vercel) consom
 
 ---
 
-*Autor: auditoria automatizada (opencode) — 14/09/2026*
+*Autor: auditoria automatizada (opencode) — 14/09/2026 | Atualizado: 15/09/2026*

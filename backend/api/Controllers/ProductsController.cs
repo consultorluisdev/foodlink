@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using api.Data;
@@ -10,6 +11,7 @@ namespace api.Controllers;
 
   [ApiController]
   [Route("api/[controller]")]
+  [AllowAnonymous]
   public class ProductsController : ControllerBase
   {
     private readonly AppDbContext _context;

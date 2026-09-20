@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using api.Data;
@@ -20,6 +21,7 @@ public class CategoriesController : ControllerBase
 
   // get api/categories
   [HttpGet]
+  [AllowAnonymous]
   public async Task<ActionResult<IEnumerable<CategoryResponseDto>>> GetCategories()
   {
     var categories = await _context.Categories
@@ -40,6 +42,7 @@ public class CategoriesController : ControllerBase
   }
   // get : api/Categories/{id}
   [HttpGet("{id}")]
+  [AllowAnonymous]
   public async Task<ActionResult<CategoryResponseDto>> GetCategory(int id)
   {
     var category = await _context.Categories
@@ -64,6 +67,7 @@ public class CategoriesController : ControllerBase
 
   // post: api/categoires
   [HttpPost]
+  [AllowAnonymous]
   public async Task<ActionResult<CategoryResponseDto>> CreatedCategory(CreateCategoryDto createDto)
   {
     // verefica se já existe categoria do mesmo nome
@@ -99,6 +103,7 @@ public class CategoriesController : ControllerBase
 
       // put: api/categorories/{id}
       [HttpPut("{id}")]
+      [AllowAnonymous]
       public async Task<IActionResult> UpdatedCategory(int id, UpdateCategoryDto updateDto)
   {
    var category = await _context.Categories.FindAsync(id);
@@ -108,6 +113,7 @@ public class CategoriesController : ControllerBase
    var exists = await _context.Categories
       .AnyAsync(c => c.Id != id && c.Name.ToLower() == updateDto.Name.ToLower());
     if(exists)
+      return Conflict(new { message = "Já existe uma categoria com este nome"});
 
         category.Name = updateDto.Name;
         category.Description = updateDto.Description;

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Search, Clock, LogOut } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function Topbar({ title }) {
   const navigate = useNavigate()
@@ -13,9 +14,10 @@ export default function Topbar({ title }) {
     return () => clearInterval(id)
   }, [])
 
+  const { logout } = useAuth()
+
   const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
+    logout()
     navigate('/login')
   }
 

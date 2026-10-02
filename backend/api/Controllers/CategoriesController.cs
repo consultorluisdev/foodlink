@@ -31,6 +31,7 @@ public class CategoriesController : ControllerBase
     {
       Id = c.Id,
       Name = c.Name,
+      Description = c.Description,
       IsActive = c.IsActive,
       CreatedAt = c.CreatedAt,
       UpdatedAt = c.UpdatedAt,
@@ -52,6 +53,7 @@ public class CategoriesController : ControllerBase
     {
       Id =  c.Id,
       Name = c.Name,
+      Description = c.Description,
       IsActive = c.IsActive,
       CreatedAt = c.CreatedAt,
       UpdatedAt = c.UpdatedAt,
@@ -67,7 +69,7 @@ public class CategoriesController : ControllerBase
 
   // post: api/categoires
   [HttpPost]
-  [AllowAnonymous]
+  [Authorize]
   public async Task<ActionResult<CategoryResponseDto>> CreatedCategory(CreateCategoryDto createDto)
   {
     // verefica se já existe categoria do mesmo nome
@@ -103,7 +105,7 @@ public class CategoriesController : ControllerBase
 
       // put: api/categorories/{id}
       [HttpPut("{id}")]
-      [AllowAnonymous]
+      [Authorize]
       public async Task<IActionResult> UpdatedCategory(int id, UpdateCategoryDto updateDto)
   {
    var category = await _context.Categories.FindAsync(id);
@@ -126,6 +128,7 @@ public class CategoriesController : ControllerBase
   }
   // delete: api/categories{id}
   [HttpDelete("{id}")]
+  [Authorize]
   public async Task<IActionResult> DeleteCategory(int id)
   {
     var category  = await _context.Categories

@@ -24,38 +24,58 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterDto dto)
     {
-        var exists = await _context.Users.AnyAsync(u => u.Email == dto.Email);
-        if(exists)
+        if (string.IsNullOrWhiteSpace(dto.Name))
+            return BadRequest(new { message = "Nome é obrigatório " });
+
+        if (!IsValidEmail(dto.Email))
+            return BadRequest(new { message = "Email Inválido" });
+
+        if (dto.Password.Length < 6)
+            return BadRequest(new { message = "Senha deve ter no mínimo 6 caracteres" });
+
+        if (await _context.Users.AnyAsync(x => x.Email == dto.Email))
             return BadRequest(new { message = "Email já cadastrado" });
 
-            var user = new User
-            {
-                Name = dto.Name,
-                Email = dto.Email,
-                Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                Role = "Operador"
-            };
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Usuario criado com sucesso "});
-        }
-    // login endpoint
-        [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto dto)
+        var user = new User
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
-            if(user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
-                return Unauthorized(new { message = "Email ou senha inaválidos" });
+            Name = dto.Name,
+            Email = dto.Email,
+            Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+            Role = "Operador"
+        };
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
 
-            var token = _tokenService.Generate(user);
+        return Ok(new { message = "Usuario criado com sucesso " });
+    }
+    // login endpoint
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginDto dto)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+        if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
+            return Unauthorized(new { message = "Email ou senha inaválidos" });
 
-            return Ok(new
-            {
-                token,
-                user = new { user.Id, user.Name, user.Email, user.Role }
-            });
+        var token = _tokenService.Generate(user);
 
-        }
+        return Ok(new
+        {
+            token,
+            user = new { user.Id, user.Name, user.Email, user.Role }
+        });
 
     }
+    private static bool IsValidEmail(string email)
+    {
+        try
+        {
+            var addr = new System.Net.Mail.MailAddress(email);
+            return addr.Address == email;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+}

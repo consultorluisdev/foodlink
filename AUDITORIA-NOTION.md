@@ -1,6 +1,6 @@
 # FoodLink — Auditoria do Projeto
 
-> **Status:** Em andamento | **Última atualização:** 20/09/2026
+> **Status:** Em andamento | **Última atualização:** 26/09/2026
 > **Meta da semana:** Tudo funcional com testes — Catálogo, Admin, PDV, Clientes
 
 ---

@@ -28,7 +28,7 @@ public class AuthControllerTests
             {"Jwt:Key", "teste-Key-minimum-32-chars-long!!"},
             {"Jwt:Issuer", "teste-Issuer"},
             {"Jwt:Audience", "teste-Audience"},
-            {"Jwt:ExpiresInHours", "24"}
+            {"Jwt:ExpiresInMinutes", "480"}
         })
         .Build();
     }

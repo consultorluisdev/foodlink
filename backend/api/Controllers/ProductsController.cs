@@ -4,14 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using api.Data;
 using api.Entities;
 using api.DTOs.Products;
-using api.DTOs.Product;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace api.Controllers;
 
   [ApiController]
   [Route("api/[controller]")]
-  [AllowAnonymous]
+  [Authorize]
   public class ProductsController : ControllerBase
   {
     private readonly AppDbContext _context;
@@ -23,6 +22,7 @@ namespace api.Controllers;
 
     // get: api/products
     [HttpGet]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetProducts(
       [FromQuery] bool? active = null,
       [FromQuery] int? categoryId = null,
@@ -70,6 +70,7 @@ namespace api.Controllers;
       }
     // get api/products/{id}
     [HttpGet("{id}")]
+    [AllowAnonymous]
       public async Task<ActionResult<ProductResponseDto>> GetProduct(int id)
   {
     var products = await _context.Products
@@ -205,8 +206,9 @@ namespace api.Controllers;
     if (product == null)
       return NotFound(new { message = "Produto não encontrado" });
 
-    // verificar se há pedidos ou vendas
-    // por enquanto permitir exclusão direta
+    var temItens = await _context.ItensPedido.AnyAsync(i => i.ProdutoId == id);
+    if (temItens)
+      return Conflict(new { message = "Não é possível excluir o produto, pois ele está associado a pedidos." });
 
     _context.Products.Remove(product);
     await _context.SaveChangesAsync();

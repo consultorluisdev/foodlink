@@ -12,7 +12,7 @@ public class AppDbContext : DbContext
     public DbSet<Product> Products { get; set; }
     public DbSet<Cliente> Clientes { get; set; }
     public DbSet<Pedido> Pedidos { get; set; }
-    public DbSet<ItemPedido> ItensPedido { get; set; }
+    public DbSet<ItemPedido> ItensPedido { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -61,7 +61,7 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
         });
         // cliente configuration
-        modelBuilder.Entity<Cliente>(entity => 
+        modelBuilder.Entity<Cliente>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Nome).IsRequired().HasMaxLength(200);
@@ -72,7 +72,7 @@ public class AppDbContext : DbContext
 
         });
         // pedido configuration
-        modelBuilder.Entity<Pedido>(entity => 
+        modelBuilder.Entity<Pedido>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
@@ -91,7 +91,7 @@ public class AppDbContext : DbContext
         });
 
         // item pedido configuration
-        modelBuilder.Entity<ItemPedido>(entity => 
+        modelBuilder.Entity<ItemPedido>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Quantidade).HasDefaultValue(1);

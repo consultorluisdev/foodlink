@@ -11,14 +11,14 @@ public class TokenService
     private readonly string _key;
     private readonly string _issuer;
     private readonly string _audience;
-    private readonly int _expiresInHours;
+    private readonly int _expiresInMinutes;
 
     public TokenService(IConfiguration config)
     {
         _key = config["Jwt:Key"]!;
         _issuer = config["Jwt:Issuer"]!;
         _audience = config["Jwt:Audience"]!;
-        _expiresInHours = int.TryParse(config["Jwt:ExpiresInHours"], out var h) ? h : 24;
+        _expiresInMinutes = int.TryParse(config["Jwt:ExpiresInMinutes"], out var m) ? m : 480;
     }
 
     public string Generate(User user)
@@ -38,7 +38,7 @@ public class TokenService
             issuer: _issuer,
             audience: _audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(_expiresInHours),
+            expires: DateTime.UtcNow.AddMinutes(_expiresInMinutes),
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);

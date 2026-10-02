@@ -1,12 +1,10 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:15
-    container_name: erp_pizza_postgres
+    container_name: foodlink_postgres
     restart: always
     environment:
-      POSTGRES_DB: pizza_db
+      POSTGRES_DB: foodlink_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
